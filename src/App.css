@@ -1,38 +1,129 @@
-.App {
-  text-align: center;
+html {
+  font-size: 16px;
+}
+body {
+  margin: 0;
+  font-family: 'Noto Sans', sans-serif;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+a {
+  cursor: pointer;
+}
+div {
+  display: block;
+}
+menu, ol, ul {
+  list-style: none;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+#root {
+  position: relative;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* HEADER */
+.header {
+  width: 100%;
+  position: absolute;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.nav-wrapper {
+  position: relative;
+  top: 0;
+  margin: 0 auto;
+  max-width: 800px;
+  height: 60px;
+  padding: 10px 40px;
   display: flex;
-  flex-direction: column;
+}
+.nav {
+  flex: 1 1 auto;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+}
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  flex: 1 1 auto;
+}
+.auth-links {
+  flex: 0 0 auto;
+}
+.auth-links > * {
+  margin-left: 10px;
 }
 
-.App-link {
-  color: #61dafb;
+
+/* MAIN */
+.main {
+  max-width: 800px;
+  padding-top: 60px;
+  padding-left: 40px;
+  padding-right: 40px;
+  margin: 0 auto;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+
+/* AUTH */
+.auth-wrapper {
+  margin: 0 auto;
+  padding: 20px 0;
+  max-width: 440px;
+  min-width: 320px;
+}
+.auth-form,
+.auth-form ul,
+.auth-form li,
+.auth-form label,
+.auth-form input {
+  width: 100%;
+}
+.auth-form li {
+  margin-top: 10px;
+}
+.auth-form label {
+  display: block;
+}
+.auth-form input {
+  border: none;
+  font-size: 16px;
+}
+.auth-form input:focus {
+  outline: none;
+}
+.auth-inp-wrapper {
+  margin-top: 10px;
+  display: block;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid rgb(100, 100, 100);
+  display: flex;
+}
+.auth-inp-wrapper:focus-within {
+  outline: currentColors solid 1px;
+}
+.show-passw {
+  display: flex;
+  align-items: center;
+}
+.show-passw:hover {
+  cursor: pointer;
+}
+
+.auth-btn {
+  margin-top: 20px;
+  font-size: 1rem;
+  letter-spacing: 0.03rem;
+  appearance: none;
+  border: none;
+  background-color: #333333;
+  color: #FFF;
+  padding: 12px;
+  transition: all 0.2s ease;
+}
+.auth-btn:hover {
+  cursor: pointer;
+  background-color: black;
 }
