@@ -34,7 +34,7 @@ function Main() {
         <Route path="/settings">
           <Settings />
         </Route>
-        <Route path="/login">
+        <Route path="/signin">
           <Auth />
         </Route>
         <Route path="/register">
@@ -74,7 +74,7 @@ function Nav() {
     <nav class="nav">
       <div class="logo">Babble</div>
       <div class="auth-links">
-        <Link to="/login">Login</Link>
+        <Link to="/signin">Signin</Link>
         <Link to="/register">Register</Link>
       </div>
     </nav>
@@ -116,7 +116,7 @@ function Settings() {
 function Auth() {
   return (
     <div class="auth-wrapper">
-      <Login />
+      <Signin />
     </div>
   );
 }
@@ -125,12 +125,27 @@ function Auth() {
 
 
 
-function Login() {
+function Signin() {
   const [name, setName] = useState("");
   const [passw, setPassw] = useState("");
   const [passwShow, setPasswShow] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
-  function doAuth() {
+  async function doAuth() {
+    if (isSending) {
+      return null;
+    }
+    setIsSending(true);
+    let userAcc = await doPostReq().catch(e => {
+      console.log('Got error during fetch: ' + e.message);
+      // add a message to frontend about failure to find account or other
+    });
+    console.log(`logging out ${userAcc}`);
+    setIsSending(false);
+  }
+
+  async function doPostReq() {
+    let authUrl = "http://127.0.0.1:8000/accounts/signin";
     let headers = new Headers();
     headers.append('X-CSRFToken', Cookies.get('csrftoken'));
 
@@ -138,19 +153,21 @@ function Login() {
     authForm.set('username', name);
     authForm.set('password', passw);
     
-    fetch("http://127.0.0.1:8000/frontend/logme", {
+    let resp = await fetch(authUrl, {
       method: 'post',
       headers: headers,
       body: authForm,
-      credentials: 'include'
-    }).then((resp) => {
-      console.log(resp.text());
+      credentials: 'include',
     });
+    if (!resp.ok) {
+      throw new Error(`HTTP resp with status ${resp.status}`);
+    }
+    return resp.json();
   }
 
   return (
     <React.Fragment>
-      <h3>Login</h3>
+      <h3>Signin</h3>
       <form class="auth-form">
         <ul>
           <li>
@@ -169,7 +186,7 @@ function Login() {
             </div>
           </li>
           <li>
-            <button class="auth-btn" type="button" onClick={() => doAuth()}>Sign in</button>
+            <button class="auth-btn" type="button" disabled={isSending} onClick={() => doAuth()}>Sign in</button>
           </li>
         </ul>
       </form>
