@@ -4,6 +4,7 @@ import {
   Switch,
   Route,
   Link,
+  Redirect,
   useRouteMatch,
   useParams
 } from "react-router-dom";
@@ -14,7 +15,6 @@ import Cookies from 'js-cookie';
 function App() {
   return (
     <Router>
-      <Header />
       <Main />
     </Router>
   );
@@ -22,29 +22,45 @@ function App() {
 
 
 function Main() {
+  const [signedIn, setSignedIn] = useState(false);
+
+  if (!signedIn) {
+    fetch("http://127.0.0.1:8000/api/accounts/signed_in").then((resp) => {
+      console.log('auth req sent and received');
+      if (resp.ok) {
+        setSignedIn(true);
+      } else {
+        setSignedIn(false);
+      }
+    });
+  }
+
   return (
-    <main class="main">
-      <Switch>
-        <Route path="/contacts">
-          <Contacts />
-        </Route>
-        <Route path="/chats">
-          <Chats />
-        </Route>
-        <Route path="/settings">
-          <Settings />
-        </Route>
-        <Route path="/signin">
-          <Auth />
-        </Route>
-        <Route path="/register">
-          <Auth />
-        </Route>
-        <Route path="/">
-          <Welcome />
-        </Route>
-      </Switch>
-    </main>
+    <React.Fragment>
+      <Header signedIn={signedIn} />
+      <main class="main">
+        <Switch>
+          <Route path="/contacts">
+            <Contacts />
+          </Route>
+          <Route path="/chats">
+            <Chats />
+          </Route>
+          <Route path="/settings">
+            <Settings />
+          </Route>
+          <Route path="/signin">
+            <Auth setSignedIn={setSignedIn} signedIn={signedIn} />
+          </Route>
+          <Route path="/register">
+            <Auth />
+          </Route>
+          <Route path="/">
+            <Welcome />
+          </Route>
+        </Switch>
+      </main>
+    </React.Fragment>
   );
 }
 
@@ -59,17 +75,29 @@ function Welcome() {
 }
 
 
-function Header() {
+function Header(props) {
   return (
     <header class="header">
       <div class="nav-wrapper">
-        <Nav />
+        <Nav signedIn={props.signedIn} />
       </div>
     </header>
   );
 }
 
-function Nav() {
+
+function Nav(props) {
+  // need to refactor for nicer look
+  if (props.signedIn) {
+    return (
+      <nav class="nav">
+        <div class="logo">Babble</div>
+        <div class="auth-links">
+          <Link to="/contacts">Enter Babble</Link>
+        </div>
+      </nav>
+    );
+  }
   return (
     <nav class="nav">
       <div class="logo">Babble</div>
@@ -84,12 +112,10 @@ function Nav() {
 
 
 
-
-
 function Contacts() {
   return (
     <div>
-      <h4>Contacts</h4>
+      <h2>Contacts</h2>
     </div>
   );
 }
@@ -113,19 +139,19 @@ function Settings() {
 }
 
 
-function Auth() {
+function Auth(props) {
+  if (props.signedIn) {
+    return (<Redirect to="/contacts" />);
+  }
   return (
     <div class="auth-wrapper">
-      <Signin />
+      <Signin setSignedIn={props.setSignedIn} />
     </div>
   );
 }
 
 
-
-
-
-function Signin() {
+function Signin(props) {
   const [name, setName] = useState("");
   const [passw, setPassw] = useState("");
   const [passwShow, setPasswShow] = useState(false);
@@ -136,16 +162,17 @@ function Signin() {
       return null;
     }
     setIsSending(true);
-    let userAcc = await doPostReq().catch(e => {
+    doPostReq().then(() => {
+      props.setSignedIn(true);
+      setIsSending(false);
+    }).catch(e => {
       console.log('Got error during fetch: ' + e.message);
       // add a message to frontend about failure to find account or other
     });
-    console.log(`logging out ${userAcc}`);
-    setIsSending(false);
   }
 
   async function doPostReq() {
-    let authUrl = "http://127.0.0.1:8000/accounts/signin";
+    let authUrl = "http://127.0.0.1:8000/api/accounts/signin";
     let headers = new Headers();
     headers.append('X-CSRFToken', Cookies.get('csrftoken'));
 
