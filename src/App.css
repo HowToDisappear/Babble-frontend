@@ -24,6 +24,12 @@ menu, ol, ul {
   position: relative;
 }
 
+
+
+
+
+
+
 /* HEADER */
 .header {
   width: 100%;
@@ -56,14 +62,69 @@ menu, ol, ul {
 }
 
 
-/* MAIN */
-.main {
-  max-width: 800px;
-  padding-top: 60px;
-  padding-left: 40px;
-  padding-right: 40px;
+
+/* CONTENT */
+.content {
+  max-width: 1000px;
+  height: 100vh;
   margin: 0 auto;
+  display: flex;
+  overflow: hidden;
 }
+
+.sidebar {
+  /* background-color: antiquewhite; */
+  flex: 0 0 auto;
+  width: 240px;
+}
+.sidebar-search {
+  height: 48px;
+  padding: 0 10px;
+}
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-nav-link {
+  flex: 0 0 auto;
+  display: block;
+  padding: 1px 0;
+  margin-left: 8px;
+}
+.sidebar-nav-container {
+  height: 42px;
+  padding: 0 8px;
+}
+
+
+.contacts {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+}
+.contact-link {
+  flex: 0 0 auto;
+  display: block;
+  padding: 1px 0;
+  margin-left: 8px;
+}
+.contact-container {
+  height: 42px;
+  padding: 0 8px;
+}
+
+
+.main {
+  background-color: burlywood;
+  flex: 1 1 auto;
+}
+
+
+
+
+
+
 
 
 /* AUTH */

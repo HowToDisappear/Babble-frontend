@@ -13,142 +13,248 @@ import Cookies from 'js-cookie';
 
 
 function App() {
-  return (
-    <Router>
-      <Main />
-    </Router>
-  );
-}
-
-
-function Main() {
-  const [signedIn, setSignedIn] = useState(false);
-
-  if (!signedIn) {
-    fetch("http://127.0.0.1:8000/api/accounts/signed_in").then((resp) => {
-      console.log('auth req sent and received');
+  const [signedIn, setSignedIn] = useState(null);
+  
+  useEffect(() => {
+    console.log('executing fetch');
+    fetch("http://127.0.0.1:8000/api/accounts/signed_in")
+    .then((resp) => {
+      console.log('fetch response received');
       if (resp.ok) {
+        console.log('entered ok, setting signedIn to true');
         setSignedIn(true);
       } else {
-        setSignedIn(false);
+        console.log('setting signedIn to false');
+        setSignedIn(false);  
       }
     });
-  }
+  }, []);
 
-  return (
-    <React.Fragment>
-      <Header signedIn={signedIn} />
-      <main class="main">
-        <Switch>
-          <Route path="/contacts">
-            <Contacts />
-          </Route>
-          <Route path="/chats">
-            <Chats />
-          </Route>
-          <Route path="/settings">
-            <Settings />
-          </Route>
-          <Route path="/signin">
-            <Auth setSignedIn={setSignedIn} signedIn={signedIn} />
-          </Route>
-          <Route path="/register">
-            <Auth />
-          </Route>
-          <Route path="/">
-            <Welcome />
-          </Route>
-        </Switch>
-      </main>
-    </React.Fragment>
-  );
+  if (signedIn === null) {
+    console.log('returning loading...');
+    return 'Loading...';
+  }
+  console.log('last return statement');
+  return signedIn ? <div><Content /></div> : <div><Auth setSignedIn={setSignedIn} /></div>;
 }
 
 
 
-function Welcome() {
+
+function Content() {
+  const [contacts, setContacts] = useState(null);
+  const [updCont, setUpdCont] = useState(-1);
+
+  
+  useEffect(
+    () => {
+      fetch("http://127.0.0.1:8000/api/accounts/contacts")
+      .then(resp => {
+        if (!resp.ok) {
+          throw new Error(`HTTP error status: ${resp.status}`);
+        }
+        console.log('fetching contact list');
+        return resp.json();
+      })
+      .then(json => setContacts(json));
+    },
+    [updCont],
+  );
+
   return (
-    <div>
-      <h4>Welcome</h4>
+    <div class="content">
+      <Sidebar contacts={contacts} />
+      <Main contacts={contacts} />
     </div>
   );
 }
 
 
-function Header(props) {
+
+
+
+
+
+function Sidebar(props) {
+  console.log(`Sidebar: ${props.contacts}`);
   return (
-    <header class="header">
-      <div class="nav-wrapper">
-        <Nav signedIn={props.signedIn} />
-      </div>
-    </header>
+    <div class="sidebar">
+      <SidebarSearch />
+      <SidebarNav setSelected={props.setSelected} contacts={props.contacts} />
+      <SidebarContacts contacts={props.contacts} />
+    </div>
   );
 }
 
 
-function Nav(props) {
-  // need to refactor for nicer look
-  if (props.signedIn) {
-    return (
-      <nav class="nav">
-        <div class="logo">Babble</div>
-        <div class="auth-links">
-          <Link to="/contacts">Enter Babble</Link>
+function SidebarSearch() {
+  return (
+    <div class="sidebar-search">
+      <h4>SidebarSearch</h4>
+    </div>
+  );
+}
+
+
+function SidebarNav(props) {
+  const setSelected = props.setSelected;
+  return (
+    <div class="sidebar-nav">
+      <a class="sidebar-nav-link">
+        <div class="sidebar-nav-container">
+          <Link to="/contacts">Contacts</Link>
         </div>
-      </nav>
-    );
+      </a>
+      <a class="sidebar-nav-link">
+        <div class="sidebar-nav-container">
+          <Link to="/settings">Settings</Link>
+        </div>
+      </a>
+      <a class="sidebar-nav-link">
+        <div class="sidebar-nav-container">
+          <Link to={`/chats/${17}`}>Chats</Link>
+        </div>
+      </a>
+
+    </div>
+  );
+}
+
+
+function SidebarContacts(props) {
+  if (!props.contacts) {
+    return <div></div>;
   }
+  console.log(`Contacts: ${props.contacts.contact_list}`);
+  const contacts = props.contacts.contact_list;
+  const contNames = contacts.map(cont =>
+    <Link to={`/chats/${cont.to_account.user.first_name}`}>
+      <a class="contact-link">
+        <div class="contact-container">{cont.to_account.user.first_name}</div>
+      </a>
+    </Link>
+  );
   return (
-    <nav class="nav">
-      <div class="logo">Babble</div>
-      <div class="auth-links">
-        <Link to="/signin">Signin</Link>
-        <Link to="/register">Register</Link>
+    <div class="contacts">
+      {contNames}
+    </div>
+  );
+}
+
+
+
+
+
+
+function Main(props) {
+  return (
+    <main class="main">
+      <h2>Main</h2>
+      <Switch>
+        <Route path="/contacts">
+          <MainContacts contacts={props.contacts} />
+        </Route>
+        <Route path="/chats/:uid" component={MainChats} />
+        <Route path="/settings">
+          <MainSettings />
+        </Route>
+      </Switch>
+    </main>
+  );
+}
+
+
+function MainContacts(props) {
+  const contNames = props.contacts.contact_list.map(cont =>
+    <a class="contact-link">
+      <div class="contact-container">
+        {cont.to_account.user.first_name} 
+        {cont.to_account.user.last_name}
       </div>
-    </nav>
+    </a>
   );
-}
-
-
-
-
-function Contacts() {
   return (
     <div>
-      <h2>Contacts</h2>
+      <h4>Contacts</h4>
+      {contNames}
     </div>
   );
 }
 
 
-function Chats() {
+function MainChats() {
+  let {uid} = useParams();
   return (
     <div>
-      <h4>Chats</h4>
+      <h4>Chats for user: {uid}</h4>
     </div>
   );
 }
 
 
-function Settings() {
+function MainSettings() {
   return (
     <div>
-      <h4>Settings</h4>
+      <h4>MainSettings</h4>
     </div>
   );
 }
+
+
+
+
+
+
+// function asdasdHeader(props) {
+//   return (
+//     <header class="header">
+//       <div class="nav-wrapper">
+//         <Nav signedIn={props.signedIn} />
+//       </div>
+//     </header>
+//   );
+// }
+
+
+// function asasdNav(props) {
+//   // need to refactor for nicer look
+//   if (props.signedIn) {
+//     return (
+//       <nav class="nav">
+//         <div class="logo">Babble</div>
+//         <div class="auth-links">
+//           {/* <Link to="/contacts">Enter Babble</Link> */}
+//         </div>
+//       </nav>
+//     );
+//   }
+//   return (
+//     <nav class="nav">
+//       <div class="logo">Babble</div>
+//       <div class="auth-links">
+//         {/* <Link to="/signin">Signin</Link>
+//         <Link to="/register">Register</Link> */}
+//       </div>
+//     </nav>
+//   );
+// }
+
+
+
+
 
 
 function Auth(props) {
-  if (props.signedIn) {
-    return (<Redirect to="/contacts" />);
-  }
+  // if (props.signedIn) {
+  //   return (<Redirect to="/" />);
+  // }
   return (
     <div class="auth-wrapper">
       <Signin setSignedIn={props.setSignedIn} />
     </div>
   );
 }
+
 
 
 function Signin(props) {
@@ -165,6 +271,7 @@ function Signin(props) {
     doPostReq().then(() => {
       props.setSignedIn(true);
       setIsSending(false);
+      return (<Redirect to="/" />);
     }).catch(e => {
       console.log('Got error during fetch: ' + e.message);
       // add a message to frontend about failure to find account or other
@@ -189,7 +296,7 @@ function Signin(props) {
     if (!resp.ok) {
       throw new Error(`HTTP resp with status ${resp.status}`);
     }
-    return resp.json();
+    return null;
   }
 
   return (
