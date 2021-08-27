@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link,
+  NavLink,
   Redirect,
   useRouteMatch,
   useParams
@@ -14,57 +15,139 @@ import Cookies from 'js-cookie';
 
 function App() {
   const [signedIn, setSignedIn] = useState(null);
+  // const [signedIn, setSignedIn] = useState(true);
   
   useEffect(() => {
-    console.log('executing fetch');
+    console.log('checking whether singed in');
     fetch("http://127.0.0.1:8000/api/accounts/signed_in")
     .then((resp) => {
-      console.log('fetch response received');
       if (resp.ok) {
-        console.log('entered ok, setting signedIn to true');
         setSignedIn(true);
       } else {
-        console.log('setting signedIn to false');
         setSignedIn(false);  
       }
     });
   }, []);
 
   if (signedIn === null) {
-    console.log('returning loading...');
     return 'Loading...';
   }
-  console.log('last return statement');
-  return signedIn ? <div><Content /></div> : <div><Auth setSignedIn={setSignedIn} /></div>;
+  return signedIn ? <div><Container /></div> : <div><Auth setSignedIn={setSignedIn} /></div>;
 }
 
 
 
 
-function Content() {
-  const [contacts, setContacts] = useState(null);
-  const [updCont, setUpdCont] = useState(-1);
+const PLUG = {
+  "contact_list": [
+      {
+          "status": 1,
+          "to_account": {
+              "favcolor": "green",
+              "id": 2,
+              "user": {
+                  "first_name": "Jack",
+                  "id": 3,
+                  "last_name": "Doe",
+                  "username": "jack"
+              }
+          }
+      },
+      {
+          "status": 1,
+          "to_account": {
+              "favcolor": null,
+              "id": 4,
+              "user": {
+                  "first_name": "Gill",
+                  "id": 5,
+                  "last_name": "Doe",
+                  "username": "gill"
+              }
+          }
+      },
+      {
+          "status": 2,
+          "to_account": {
+              "favcolor": null,
+              "id": 3,
+              "user": {
+                  "first_name": "Jane",
+                  "id": 4,
+                  "last_name": "Doe",
+                  "username": "jane"
+              }
+          }
+      }
+  ]
+}
 
-  
+
+
+
+function Container() {
+  const [contacts, setContacts] = useState(null);
+  // const [contacts, setContacts] = useState(PLUG);
+  const [updCont, setUpdCont] = useState(-1);
+  const statusWs = useRef(null);
+  const [isOnline, setIsOnline] = useState(new Set());
+
   useEffect(
     () => {
+      console.log('fetching contact list');
       fetch("http://127.0.0.1:8000/api/accounts/contacts")
       .then(resp => {
         if (!resp.ok) {
           throw new Error(`HTTP error status: ${resp.status}`);
         }
-        console.log('fetching contact list');
         return resp.json();
       })
       .then(json => setContacts(json));
     },
     [updCont],
   );
+  useEffect(() => {
+    statusWs.current = new WebSocket(
+      'ws://'
+      + window.location.host
+      + '/ws/status/'
+    );
+    statusWs.current.onopen = () => console.log("ws opened");
+    statusWs.current.onclose = () => console.log("ws closed");
+    statusWs.current.onmessage = (e) => {
+      console.log("before update:");
+      console.log(isOnline);
+      const data = JSON.parse(e.data);
+      console.log(data);
+      if (data.status === 'online') {
+        console.log("in online clause update:");
+        setIsOnline(() => {
+          let copy = new Set(isOnline);
+          copy.add(parseInt(data.account));
+          return copy;
+        });
+      } else if (data.status === 'offline') {
+        console.log("in offline clause update:");
+        setIsOnline(() => {
+          let copy = new Set(isOnline);
+          copy.delete(parseInt(data.account));
+          return copy;
+        });
+      } else {
+        console.log('wrong status!');
+      }
+    };
+  }, []);
 
+  if (contacts === null || statusWs === null) {
+    return <div></div>;
+  }
   return (
-    <div class="content">
-      <Sidebar contacts={contacts} />
-      <Main contacts={contacts} />
+    <div class="container">
+      {console.log("rendering in container")}
+      {console.log(isOnline)}
+      <Sidebar contacts={contacts} isOnline={isOnline} />
+      <Content contacts={contacts} />
     </div>
   );
 }
@@ -74,14 +157,17 @@ function Content() {
 
 
 
+// --------------------------------------- SIDEBAR ---------------------------------------
 
 function Sidebar(props) {
-  console.log(`Sidebar: ${props.contacts}`);
+  console.log(`entering sidebar`);
   return (
     <div class="sidebar">
+      {console.log("rendering in sidebar")}
+      {console.log(props.isOnline)}
       <SidebarSearch />
-      <SidebarNav setSelected={props.setSelected} contacts={props.contacts} />
-      <SidebarContacts contacts={props.contacts} />
+      <SidebarNav />
+      <SidebarContacts contacts={props.contacts} isOnline={props.isOnline} />
     </div>
   );
 }
@@ -89,53 +175,67 @@ function Sidebar(props) {
 
 function SidebarSearch() {
   return (
-    <div class="sidebar-search">
-      <h4>SidebarSearch</h4>
+    <div class="sidebar__search">
+      <form>
+        <input class="sidebar__search-inp" type="search" placeholder="Search in messages.."></input>
+      </form>
     </div>
   );
 }
 
 
 function SidebarNav(props) {
-  const setSelected = props.setSelected;
   return (
-    <div class="sidebar-nav">
-      <a class="sidebar-nav-link">
-        <div class="sidebar-nav-container">
-          <Link to="/contacts">Contacts</Link>
+    <div class="sidebar__nav">
+      <NavLink to="/contacts" activeClassName="sidebar__nav__item--selected">
+        <div class="sidebar__nav__item">
+          <div class="sidebar__nav__icon"></div>
+          <div>Contacts</div>
         </div>
-      </a>
-      <a class="sidebar-nav-link">
-        <div class="sidebar-nav-container">
-          <Link to="/settings">Settings</Link>
+      </NavLink>
+      <NavLink to="/settings" activeClassName="sidebar__nav__item--selected">
+        <div class="sidebar__nav__item">
+          <div class="sidebar__nav__icon"></div>
+          <div>Settings</div>
         </div>
-      </a>
-      <a class="sidebar-nav-link">
-        <div class="sidebar-nav-container">
-          <Link to={`/chats/${17}`}>Chats</Link>
+      </NavLink>
+      <NavLink to={`/chats/${17}`} activeClassName="sidebar__nav__item--selected">
+        <div class="sidebar__nav__item">
+          <div class="sidebar__nav__icon"></div>
+          <div>Chats</div>
         </div>
-      </a>
-
+      </NavLink>
     </div>
   );
 }
 
 
 function SidebarContacts(props) {
-  if (!props.contacts) {
-    return <div></div>;
-  }
-  console.log(`Contacts: ${props.contacts.contact_list}`);
+  console.log(`entering sidebar contacts`);
   const contacts = props.contacts.contact_list;
+  console.log(props.isOnline);
+  console.log(props.contacts.contact_list);
   const contNames = contacts.map(cont =>
-    <Link to={`/chats/${cont.to_account.user.first_name}`}>
+    <NavLink to={`/chats/${cont.to_account.id}`} activeClassName="sidebar__contact--selected">
       <a class="contact-link">
-        <div class="contact-container">{cont.to_account.user.first_name}</div>
+        <div class="sidebar__contact">
+          <div class="sidebar__contact__avatar">
+            {cont.to_account.user.first_name[0]}
+            <div class={`sidebar__contact__status ${props.isOnline.has(cont.to_account.id) ? "sidebar__contact__status--online" : "sidebar__contact__status--offline"}`}></div>
+          </div>
+          <div class="sidebar__contact__name">
+            {`${cont.to_account.user.first_name} ${cont.to_account.user.last_name}`}
+          </div>
+        </div>
       </a>
-    </Link>
+    </NavLink>
   );
   return (
-    <div class="contacts">
+    <div class="sidebar__contacts">
+      <div class="sidebar__contacts__header">
+        <h5>MESSAGES</h5>
+        <span></span>
+      </div>
       {contNames}
     </div>
   );
@@ -144,27 +244,31 @@ function SidebarContacts(props) {
 
 
 
+// --------------------------------------- CONTENT ---------------------------------------
 
-
-function Main(props) {
+function Content(props) {
   return (
-    <main class="main">
-      <h2>Main</h2>
+    <div class="content">
       <Switch>
         <Route path="/contacts">
-          <MainContacts contacts={props.contacts} />
+          <ContentContacts contacts={props.contacts} />
         </Route>
-        <Route path="/chats/:uid" component={MainChats} />
+        <Route
+          path="/chats/:uid"
+          render={(props) => (
+            <ContentChats {...props} />
+          )}
+        />
         <Route path="/settings">
-          <MainSettings />
+          <ContentSettings />
         </Route>
       </Switch>
-    </main>
+    </div>
   );
 }
 
 
-function MainContacts(props) {
+function ContentContacts(props) {
   const contNames = props.contacts.contact_list.map(cont =>
     <a class="contact-link">
       <div class="contact-container">
@@ -173,26 +277,90 @@ function MainContacts(props) {
       </div>
     </a>
   );
+
   return (
-    <div>
-      <h4>Contacts</h4>
-      {contNames}
-    </div>
+    <React.Fragment>
+      <header class="content__header">
+        <div class="nav-flexible">
+          <div class="flex-item">Add contact</div>
+          <div class="flex-item">All</div>
+          <div class="flex-item">Online</div>
+          <div class="flex-item">Pending</div>
+          <div class="flex-item">Blocked</div>
+        </div>
+        <div class="nav-fixed">
+          <div class="flex-item">extra1</div>
+          <div class="flex-item">extra2</div>
+          <div class="flex-item">extra3</div>
+        </div>
+      </header>
+      <main class="content__main">
+        <div class="content__main__contacts">
+          {contNames}
+        </div>
+      </main>
+    </React.Fragment>
   );
 }
 
 
-function MainChats() {
-  let {uid} = useParams();
-  return (
-    <div>
-      <h4>Chats for user: {uid}</h4>
-    </div>
-  );
+
+function ContentChats(props) {
+  return <div>hello</div>;
+  // let {uid} = useParams();
+  // const [chats, setChats] = useState({});
+  // const [msg, setMsg] = useState('');
+
+  // if (props.chatSocket) {
+  //   props.chatSocket.onmessage = function(e) {
+  //     const data = JSON.parse(e.data);
+  //     console.log(data.message);
+  //     // !send uid from server (uid ?)
+  //     setChats((() => {
+  //       let chatsUpd = chats;
+  //       data.uid in chatsUpd ? chatsUpd[data.uid].push(data.message) : chatsUpd[data.uid] = [data.message];
+  //       return chatsUpd;
+  //     })());
+  //   }
+  //   props.chatSocket.onclose = function(e) {
+  //     console.error('Chat socket closed unexpectedly');
+  //   };  
+  // }
+
+  // if (uid in chats) {
+  //   var chatMarkup = chats[uid].map(msg => {
+  //     <div>msg</div>
+  //   });  
+  // } else {
+  //   var chatMarkup = <div>no messages yet</div>;
+  // }
+
+  // return (
+  //   <div>
+  //     <h4>Chat for user: {uid}</h4>
+  //     <div>
+  //       {chatMarkup}
+  //     </div>
+  //     <input type="text" value={msg} onChange={(evt) => setMsg(evt.target.value)} />
+  //     <button type="button" onClick={() => {
+  //       props.chatSocket.send(JSON.stringify({
+  //         'message': msg
+  //       }));
+  //       setChats((() => {
+  //         let chatsUpd = chats;
+  //         uid in chatsUpd ? chatsUpd[uid].push(msg) : chatsUpd[uid] = [msg];
+  //         return chatsUpd;
+  //       })()
+  //       );
+  //       setMsg('');
+  //     }}>Send</button>
+  //   </div>
+  // );
 }
 
 
-function MainSettings() {
+
+function ContentSettings() {
   return (
     <div>
       <h4>MainSettings</h4>
@@ -203,46 +371,7 @@ function MainSettings() {
 
 
 
-
-
-// function asdasdHeader(props) {
-//   return (
-//     <header class="header">
-//       <div class="nav-wrapper">
-//         <Nav signedIn={props.signedIn} />
-//       </div>
-//     </header>
-//   );
-// }
-
-
-// function asasdNav(props) {
-//   // need to refactor for nicer look
-//   if (props.signedIn) {
-//     return (
-//       <nav class="nav">
-//         <div class="logo">Babble</div>
-//         <div class="auth-links">
-//           {/* <Link to="/contacts">Enter Babble</Link> */}
-//         </div>
-//       </nav>
-//     );
-//   }
-//   return (
-//     <nav class="nav">
-//       <div class="logo">Babble</div>
-//       <div class="auth-links">
-//         {/* <Link to="/signin">Signin</Link>
-//         <Link to="/register">Register</Link> */}
-//       </div>
-//     </nav>
-//   );
-// }
-
-
-
-
-
+// --------------------------------------- AUTH ---------------------------------------
 
 function Auth(props) {
   // if (props.signedIn) {
