@@ -10,21 +10,25 @@ import {
   useParams
 } from "react-router-dom";
 import './App.css';
-import Cookies from 'js-cookie';
+
+import Signup from './comps/auth/Signup.js';
+import Signin from './comps/auth/Signin.js';
+import Sidebar from './comps/sidebar/Sidebar.js';
+import Content from './comps/content/Content.js';
 
 
 function App() {
   const [signedIn, setSignedIn] = useState(null);
-  // const [signedIn, setSignedIn] = useState(true);
+  // const [signedIn, setSignedIn] = useState(false);
   
   useEffect(() => {
     console.log('checking whether singed in');
-    fetch("http://127.0.0.1:8000/api/accounts/signed_in")
+    fetch("http://127.0.0.1:8000/api/accounts/account")
     .then((resp) => {
       if (resp.ok) {
         setSignedIn(true);
       } else {
-        setSignedIn(false);  
+        setSignedIn(false);
       }
     });
   }, []);
@@ -32,9 +36,20 @@ function App() {
   if (signedIn === null) {
     return 'Loading...';
   }
-  return signedIn ? <div><Container /></div> : <div><Auth setSignedIn={setSignedIn} /></div>;
+  
+  return (
+    <Switch>
+      <Route path="/signup">
+        <Signup />
+      </Route>
+      <Route path="/" render={() => {
+        return (signedIn
+          ? <Container signedIn={signedIn} />
+          : <Signin setSignedIn={setSignedIn} />)
+      }} />
+    </Switch>
+  );
 }
-
 
 
 
@@ -44,7 +59,7 @@ const PLUG = {
           "status": 1,
           "to_account": {
               "favcolor": "green",
-              "id": 2,
+              "id": 6,
               "user": {
                   "first_name": "Jack",
                   "id": 3,
@@ -57,7 +72,7 @@ const PLUG = {
           "status": 1,
           "to_account": {
               "favcolor": null,
-              "id": 4,
+              "id": 7,
               "user": {
                   "first_name": "Gill",
                   "id": 5,
@@ -70,7 +85,7 @@ const PLUG = {
           "status": 2,
           "to_account": {
               "favcolor": null,
-              "id": 3,
+              "id": 8,
               "user": {
                   "first_name": "Jane",
                   "id": 4,
@@ -80,21 +95,115 @@ const PLUG = {
           }
       }
   ]
-}
+};
+
+
+const CHATS = {
+  "10": [],
+  "11": [],
+  "12": [],
+  "13": [],
+  "14": [],
+  "6": [
+      {
+          "id": 6,
+          "recipient": 6,
+          "sender": 5,
+          "text": "Hi Gill!",
+          "timestamp": "2021-08-28T08:56:18.108648Z"
+      },
+      {
+          "id": 7,
+          "recipient": 6,
+          "sender": 5,
+          "text": "fancy a cup of coffee?",
+          "timestamp": "2021-08-28T08:56:38.286720Z"
+      },
+      {
+          "id": 8,
+          "recipient": 5,
+          "sender": 6,
+          "text": "Hey John",
+          "timestamp": "2021-08-28T08:56:54.630331Z"
+      },
+      {
+          "id": 9,
+          "recipient": 5,
+          "sender": 6,
+          "text": "Sorry, I'm too busy,  maybe next time..",
+          "timestamp": "2021-08-28T08:57:33.393344Z"
+      }
+  ],
+  "7": [],
+  "8": [
+      {
+          "id": 1,
+          "recipient": 8,
+          "sender": 5,
+          "text": "Hey Mike! How are you?",
+          "timestamp": "2021-08-28T08:51:56.650822Z"
+      },
+      {
+          "id": 2,
+          "recipient": 5,
+          "sender": 8,
+          "text": "Hey John, I'm fine, what's up?",
+          "timestamp": "2021-08-28T08:52:42.871989Z"
+      },
+      {
+          "id": 3,
+          "recipient": 8,
+          "sender": 5,
+          "text": "I was thinking of going to the seaside, would you like to?",
+          "timestamp": "2021-08-28T08:54:16.029249Z"
+      },
+      {
+          "id": 4,
+          "recipient": 5,
+          "sender": 8,
+          "text": "Yep sounds good",
+          "timestamp": "2021-08-29T08:54:30.319443Z"
+      },
+      {
+        "id": 5,
+        "recipient": 5,
+        "sender": 8,
+        "text": "Let's aaaaaa go!",
+        "timestamp": "2021-08-28T08:54:39.076359Z"
+      },
+      {
+        "id": 6,
+        "recipient": 5,
+        "sender": 8,
+        "text": "Let's qweqew go!",
+        "timestamp": "2021-08-30T08:54:39.076359Z"
+      },
+      {
+        "id": 7,
+        "recipient": 5,
+        "sender": 8,
+        "text": "Let's asdasd go!",
+        "timestamp": "2021-08-30T08:54:39.076359Z"
+      }
+  ],
+  "9": []
+};
 
 
 
 
-function Container() {
+function Container(props) {
   const [contacts, setContacts] = useState(null);
-  // const [contacts, setContacts] = useState(PLUG);
   const [updCont, setUpdCont] = useState(-1);
-  const statusWs = useRef(null);
+  const clientWs = useRef(null);
   const [isOnline, setIsOnline] = useState(new Set());
+  const [chats, setChats] = useState(null);
 
+  console.log('printing user');
+  console.log(props.signedIn);
   useEffect(
     () => {
-      console.log('fetching contact list');
+      console.log('fetching contacts');
       fetch("http://127.0.0.1:8000/api/accounts/contacts")
       .then(resp => {
         if (!resp.ok) {
@@ -102,379 +211,102 @@ function Container() {
         }
         return resp.json();
       })
-      .then(json => setContacts(json));
+      .then(json => setContacts(json.contact_list));
     },
     [updCont],
   );
+
+  useEffect(
+    () => {
+      console.log('fetching chats');
+      fetch("http://127.0.0.1:8000/api/chats/")
+      .then(resp => {
+        if (!resp.ok) {
+          throw new Error(`HTTP error status: ${resp.status}`);
+        }
+        return resp.json();
+      })
+      .then(json => {
+        setChats(json);
+        console.log(json);
+        console.log(chats);
+      });
+    }, []);
+
   useEffect(() => {
-    statusWs.current = new WebSocket(
+    clientWs.current = new WebSocket(
       'ws://'
       + window.location.host
-      + '/ws/status/'
+      + '/ws/client/'
     );
-    statusWs.current.onopen = () => console.log("ws opened");
-    statusWs.current.onclose = () => console.log("ws closed");
-    statusWs.current.onmessage = (e) => {
-      console.log("before update:");
-      console.log(isOnline);
+    clientWs.current.onopen = () => console.log("client ws opened");
+    clientWs.current.onclose = () => console.log("client ws closed");
+    clientWs.current.onmessage = (e) => {
       const data = JSON.parse(e.data);
+      console.log('logging message data:');
       console.log(data);
-      if (data.status === 'online') {
-        console.log("in online clause update:");
-        setIsOnline(() => {
-          let copy = new Set(isOnline);
-          copy.add(parseInt(data.account));
+
+      if (data.type === 'status.message') {
+        if (data.content.status === 'online') {
+          console.log("in online clause update:");
+          setIsOnline(() => {
+            let copy = new Set(isOnline);
+            copy.add(parseInt(data.content.account));
+            return copy;
+          });
+        } else if (data.content.status === 'offline') {
+          console.log("in offline clause update:");
+          setIsOnline(() => {
+            let copy = new Set(isOnline);
+            copy.delete(parseInt(data.content.account));
+            return copy;
+          });
+        } else {
+          console.log('wrong status!');
+        }  
+      } else if (data.type === 'chat.message') {
+        console.log('doing something for chat.message');
+        setChats((prevChats) => {
+          var copy = {};
+          console.log('returning chats');
+          console.log(prevChats);
+          for (const acc in prevChats) {
+            copy[acc] = [];
+            if (prevChats[acc]) {
+              for (const msg of prevChats[acc]) {
+                copy[acc].push({...msg});
+              }
+            }
+          }
+          console.log('returning copy');
+          console.log(copy);
+          // improve this expression
+          if (copy.hasOwnProperty(data.content.sender)) {
+            copy[data.content.sender].push({...data.content});
+          } else {
+            copy[data.content.recipient].push({...data.content});
+          }
+          console.log('returning updated copy');
+          console.log(copy);
           return copy;
         });
-      } else if (data.status === 'offline') {
-        console.log("in offline clause update:");
-        setIsOnline(() => {
-          let copy = new Set(isOnline);
-          copy.delete(parseInt(data.account));
-          return copy;
-        });
-      } else {
-        console.log('wrong status!');
       }
     };
   }, []);
 
-  if (contacts === null || statusWs === null) {
+  if (contacts === null || clientWs === null || chats === null) {
     return <div></div>;
   }
+
   return (
     <div class="container">
       {console.log("rendering in container")}
-      {console.log(isOnline)}
       <Sidebar contacts={contacts} isOnline={isOnline} />
-      <Content contacts={contacts} />
+      <Content contacts={contacts} isOnline={isOnline} chats={chats} clientWs={clientWs} />
     </div>
   );
 }
 
-
-
-
-
-
-// --------------------------------------- SIDEBAR ---------------------------------------
-
-function Sidebar(props) {
-  console.log(`entering sidebar`);
-  return (
-    <div class="sidebar">
-      {console.log("rendering in sidebar")}
-      {console.log(props.isOnline)}
-      <SidebarSearch />
-      <SidebarNav />
-      <SidebarContacts contacts={props.contacts} isOnline={props.isOnline} />
-    </div>
-  );
-}
-
-
-function SidebarSearch() {
-  return (
-    <div class="sidebar__search">
-      <form>
-        <input class="sidebar__search-inp" type="search" placeholder="Search in messages.."></input>
-      </form>
-    </div>
-  );
-}
-
-
-function SidebarNav(props) {
-  return (
-    <div class="sidebar__nav">
-      <NavLink to="/contacts" activeClassName="sidebar__nav__item--selected">
-        <div class="sidebar__nav__item">
-          <div class="sidebar__nav__icon"></div>
-          <div>Contacts</div>
-        </div>
-      </NavLink>
-      <NavLink to="/settings" activeClassName="sidebar__nav__item--selected">
-        <div class="sidebar__nav__item">
-          <div class="sidebar__nav__icon"></div>
-          <div>Settings</div>
-        </div>
-      </NavLink>
-      <NavLink to={`/chats/${17}`} activeClassName="sidebar__nav__item--selected">
-        <div class="sidebar__nav__item">
-          <div class="sidebar__nav__icon"></div>
-          <div>Chats</div>
-        </div>
-      </NavLink>
-    </div>
-  );
-}
-
-
-function SidebarContacts(props) {
-  console.log(`entering sidebar contacts`);
-  const contacts = props.contacts.contact_list;
-  console.log(props.isOnline);
-  console.log(props.contacts.contact_list);
-  const contNames = contacts.map(cont =>
-    <NavLink to={`/chats/${cont.to_account.id}`} activeClassName="sidebar__contact--selected">
-      <a class="contact-link">
-        <div class="sidebar__contact">
-          <div class="sidebar__contact__avatar">
-            {cont.to_account.user.first_name[0]}
-            <div class={`sidebar__contact__status ${props.isOnline.has(cont.to_account.id) ? "sidebar__contact__status--online" : "sidebar__contact__status--offline"}`}></div>
-          </div>
-          <div class="sidebar__contact__name">
-            {`${cont.to_account.user.first_name} ${cont.to_account.user.last_name}`}
-          </div>
-        </div>
-      </a>
-    </NavLink>
-  );
-  return (
-    <div class="sidebar__contacts">
-      <div class="sidebar__contacts__header">
-        <h5>MESSAGES</h5>
-        <span></span>
-      </div>
-      {contNames}
-    </div>
-  );
-}
-
-
-
-
-// --------------------------------------- CONTENT ---------------------------------------
-
-function Content(props) {
-  return (
-    <div class="content">
-      <Switch>
-        <Route path="/contacts">
-          <ContentContacts contacts={props.contacts} />
-        </Route>
-        <Route
-          path="/chats/:uid"
-          render={(props) => (
-            <ContentChats {...props} />
-          )}
-        />
-        <Route path="/settings">
-          <ContentSettings />
-        </Route>
-      </Switch>
-    </div>
-  );
-}
-
-
-function ContentContacts(props) {
-  const contNames = props.contacts.contact_list.map(cont =>
-    <a class="contact-link">
-      <div class="contact-container">
-        {cont.to_account.user.first_name} 
-        {cont.to_account.user.last_name}
-      </div>
-    </a>
-  );
-
-  return (
-    <React.Fragment>
-      <header class="content__header">
-        <div class="nav-flexible">
-          <div class="flex-item">Add contact</div>
-          <div class="flex-item">All</div>
-          <div class="flex-item">Online</div>
-          <div class="flex-item">Pending</div>
-          <div class="flex-item">Blocked</div>
-        </div>
-        <div class="nav-fixed">
-          <div class="flex-item">extra1</div>
-          <div class="flex-item">extra2</div>
-          <div class="flex-item">extra3</div>
-        </div>
-      </header>
-      <main class="content__main">
-        <div class="content__main__contacts">
-          {contNames}
-        </div>
-      </main>
-    </React.Fragment>
-  );
-}
-
-
-
-function ContentChats(props) {
-  return <div>hello</div>;
-  // let {uid} = useParams();
-  // const [chats, setChats] = useState({});
-  // const [msg, setMsg] = useState('');
-
-  // if (props.chatSocket) {
-  //   props.chatSocket.onmessage = function(e) {
-  //     const data = JSON.parse(e.data);
-  //     console.log(data.message);
-  //     // !send uid from server (uid ?)
-  //     setChats((() => {
-  //       let chatsUpd = chats;
-  //       data.uid in chatsUpd ? chatsUpd[data.uid].push(data.message) : chatsUpd[data.uid] = [data.message];
-  //       return chatsUpd;
-  //     })());
-  //   }
-  //   props.chatSocket.onclose = function(e) {
-  //     console.error('Chat socket closed unexpectedly');
-  //   };  
-  // }
-
-  // if (uid in chats) {
-  //   var chatMarkup = chats[uid].map(msg => {
-  //     <div>msg</div>
-  //   });  
-  // } else {
-  //   var chatMarkup = <div>no messages yet</div>;
-  // }
-
-  // return (
-  //   <div>
-  //     <h4>Chat for user: {uid}</h4>
-  //     <div>
-  //       {chatMarkup}
-  //     </div>
-  //     <input type="text" value={msg} onChange={(evt) => setMsg(evt.target.value)} />
-  //     <button type="button" onClick={() => {
-  //       props.chatSocket.send(JSON.stringify({
-  //         'message': msg
-  //       }));
-  //       setChats((() => {
-  //         let chatsUpd = chats;
-  //         uid in chatsUpd ? chatsUpd[uid].push(msg) : chatsUpd[uid] = [msg];
-  //         return chatsUpd;
-  //       })()
-  //       );
-  //       setMsg('');
-  //     }}>Send</button>
-  //   </div>
-  // );
-}
-
-
-
-function ContentSettings() {
-  return (
-    <div>
-      <h4>MainSettings</h4>
-    </div>
-  );
-}
-
-
-
-
-// --------------------------------------- AUTH ---------------------------------------
-
-function Auth(props) {
-  // if (props.signedIn) {
-  //   return (<Redirect to="/" />);
-  // }
-  return (
-    <div class="auth-wrapper">
-      <Signin setSignedIn={props.setSignedIn} />
-    </div>
-  );
-}
-
-
-
-function Signin(props) {
-  const [name, setName] = useState("");
-  const [passw, setPassw] = useState("");
-  const [passwShow, setPasswShow] = useState(false);
-  const [isSending, setIsSending] = useState(false);
-
-  async function doAuth() {
-    if (isSending) {
-      return null;
-    }
-    setIsSending(true);
-    doPostReq().then(() => {
-      props.setSignedIn(true);
-      setIsSending(false);
-      return (<Redirect to="/" />);
-    }).catch(e => {
-      console.log('Got error during fetch: ' + e.message);
-      // add a message to frontend about failure to find account or other
-    });
-  }
-
-  async function doPostReq() {
-    let authUrl = "http://127.0.0.1:8000/api/accounts/signin";
-    let headers = new Headers();
-    headers.append('X-CSRFToken', Cookies.get('csrftoken'));
-
-    let authForm = new FormData();
-    authForm.set('username', name);
-    authForm.set('password', passw);
-    
-    let resp = await fetch(authUrl, {
-      method: 'post',
-      headers: headers,
-      body: authForm,
-      credentials: 'include',
-    });
-    if (!resp.ok) {
-      throw new Error(`HTTP resp with status ${resp.status}`);
-    }
-    return null;
-  }
-
-  return (
-    <React.Fragment>
-      <h3>Signin</h3>
-      <form class="auth-form">
-        <ul>
-          <li>
-            <label>Username:</label>
-            <div class="auth-inp-wrapper">
-              <input type="text" value={name} onChange={(evt) => setName(evt.target.value)} />
-            </div>
-          </li>
-          <li>
-            <label>Password:</label>
-            <div class="auth-inp-wrapper">
-              <input type={passwShow ? "text" : "password"} value={passw} onChange={(evt) => setPassw(evt.target.value)} />
-              <div class="show-passw" onClick={() => setPasswShow(!passwShow)}>
-                <ShowPassw show={passwShow}/>
-              </div>
-            </div>
-          </li>
-          <li>
-            <button class="auth-btn" type="button" disabled={isSending} onClick={() => doAuth()}>Sign in</button>
-          </li>
-        </ul>
-      </form>
-    </React.Fragment>
-  );
-}
-
-
-function ShowPassw(props) {
-  return (
-    <React.Fragment>
-      {props.show ? (
-        <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2.70711 0.292893C2.31658 -0.0976311 1.68342 -0.0976311 1.29289 0.292893C0.902369 0.683417 0.902369 1.31658 1.29289 1.70711L3.71706 4.13127C2.28639 5.20737 1.03925 6.68543 0.105573 8.55279C-0.0351909 8.83432 -0.0351909 9.16569 0.105573 9.44722C2.26379 13.7637 6.09687 16 10 16C11.5552 16 13.0992 15.645 14.5306 14.9448L17.2929 17.7071C17.6834 18.0976 18.3166 18.0976 18.7071 17.7071C19.0976 17.3166 19.0976 16.6834 18.7071 16.2929L2.70711 0.292893ZM13.0138 13.428C12.0343 13.8112 11.0134 14 10 14C7.03121 14 3.99806 12.3792 2.12966 9C2.94721 7.52136 3.98778 6.3794 5.14838 5.56259L7.29237 7.70659C7.10495 8.09822 7 8.53686 7 9.00001C7 10.6569 8.34315 12 10 12C10.4631 12 10.9018 11.8951 11.2934 11.7076L13.0138 13.428Z" fill="#0D0D0D"/>
-          <path d="M16.5523 10.8955C17.0353 10.3402 17.4784 9.70876 17.8703 9C16.0019 5.62078 12.9687 4 9.99996 4C9.88796 4 9.77586 4.00231 9.66374 4.00693L7.87939 2.22258C8.57741 2.07451 9.28752 2 9.99996 2C13.9031 2 17.7362 4.23635 19.8944 8.55279C20.0352 8.83431 20.0352 9.16569 19.8944 9.44721C19.3504 10.5352 18.7 11.491 17.9689 12.3121L16.5523 10.8955Z" fill="#0D0D0D"/>
-        </svg>
-      ) : (
-        <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M13 7C13 8.65685 11.6569 10 10 10C8.34315 10 7 8.65685 7 7C7 5.34315 8.34315 4 10 4C11.6569 4 13 5.34315 13 7Z" fill="#0D0D0D"/>
-          <path d="M19.8944 6.55279C17.7362 2.23635 13.9031 0 10 0C6.09687 0 2.26379 2.23635 0.105573 6.55279C-0.0351909 6.83431 -0.0351909 7.16569 0.105573 7.44721C2.26379 11.7637 6.09687 14 10 14C13.9031 14 17.7362 11.7637 19.8944 7.44721C20.0352 7.16569 20.0352 6.83431 19.8944 6.55279ZM10 12C7.03121 12 3.99806 10.3792 2.12966 7C3.99806 3.62078 7.03121 2 10 2C12.9688 2 16.0019 3.62078 17.8703 7C16.0019 10.3792 12.9688 12 10 12Z" fill="#0D0D0D"/>
-        </svg>
-      )}
-    </React.Fragment>
-  );
-}
 
 
 export default App;

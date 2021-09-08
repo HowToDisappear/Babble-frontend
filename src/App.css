@@ -1,5 +1,6 @@
 html {
   font-size: 14px;
+  line-height: 21px;
   font-family: 'IBM Plex Sans', sans-serif;
   color: #333738;
 }
@@ -32,6 +33,10 @@ menu, ol, ul {
 #root {
   position: relative;
 }
+.display-none {
+  display: none;
+}
+
 
 
 
@@ -44,7 +49,6 @@ menu, ol, ul {
   height: 100vh;
   margin: 0 auto;
   display: flex;
-  overflow: hidden;
 }
 
 
@@ -113,6 +117,14 @@ menu, ol, ul {
   padding: 12px 14px 6px 14px;
   display: flex;
 }
+
+
+
+
+
+
+
+
 .sidebar__contact {
   position: relative;
   z-index: 10;
@@ -121,18 +133,39 @@ menu, ol, ul {
   align-items: center;
 }
 .sidebar__contact:hover {
-  background-color: #b0b2b327;
+  background-color: #E0E2E3;
+}
+.sidebar__contact:hover .sidebar__contact__online {
+  border: 1px solid #E0E2E3;
 }
 .sidebar__contact--selected {
   background-color: #B0B2B3;
 }
+.sidebar__contact--selected .sidebar__contact:hover {
+  background-color: #B0B2B3;
+}
+.sidebar__contact--selected .sidebar__contact__online {
+  border: 1px solid #B0B2B3;
+}
+.sidebar__contact--selected .sidebar__contact:hover .sidebar__contact__online {
+  border: 1px solid #B0B2B3;
+}
+
+.sidebar__contact--selected .sidebar__contact__name {
+  color: white;
+}
 .sidebar__contact__avatar {
+  position: relative;
+  z-index: 10;
+  padding: 2px;
+  margin-right: 8px;
+}
+.sidebar__contact__pic {
   position: relative;
   z-index: 11;
   flex: 0 0 auto;
   height: 16px;
   width: 16px;
-  margin-right: 8px;
   border-radius: 50%;
   font-size: 10px;
   font-weight: 700;
@@ -141,22 +174,17 @@ menu, ol, ul {
   align-items: center;
   justify-content: center;
 }
-.sidebar__contact__status {
+.sidebar__contact__online {
   position: absolute;
   z-index: 12;
   bottom: 0;
   right: 0;
-  height: 4px;
-  width: 4px;
+  height: 7px;
+  width: 7px;
   border-radius: 50%;
-}
-.sidebar__contact__status--offline {
-  background-color: #333738;
-}
-.sidebar__contact__status--online {
+  border: 1px solid #F2F2F2;
   background-color: #25BB75;
 }
-
 
 .sidebar__contact__name {
   flex: 1 1 auto;
@@ -174,17 +202,26 @@ menu, ol, ul {
 
 
 
+
 .content {
+  max-height: 100%;
   flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
 }
 .content__header {
-  position: relative;
+  flex: 0 0 auto;
   height: 48px;
-  width: 100%;
   display: flex;
   align-items: center;
   border-bottom: 1px solid #EBEAEB;
 }
+
+
+
+
+
+
 .nav-flexible {
   flex: 1 1 auto;
   display: flex;
@@ -194,7 +231,6 @@ menu, ol, ul {
   flex: 0 0 auto;
   display: flex;
 }
-
 .flex-item {
   /* min-width: 40px; */
   display: flex;
@@ -213,7 +249,6 @@ menu, ol, ul {
   max-width: 800px;
   border-right: 1px solid #EBEAEB;
 }
-
 
 .content-header-wrapper {
   position: relative;
@@ -234,13 +269,245 @@ menu, ol, ul {
 
 
 
-/* AUTH */
-.auth-wrapper {
-  margin: 0 auto;
-  padding: 20px 0;
-  max-width: 440px;
-  min-width: 320px;
+
+.chat {
+  flex: 1 1 auto;
+  max-height: calc(100% - 48px);
+  padding: 0 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
 }
+.chat-upper-wrap {
+  flex: 1 1 auto;
+  overflow-y: scroll;
+}
+.chat-lower-wrap {
+  max-height: 50%;
+  flex: 0 0 auto;
+}
+
+
+
+.chat__contact-wrapper {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+.chat__contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.chat__contact__avatar {
+  position: relative;
+  z-index: 10;
+  padding: 2px;
+  margin-bottom: 8px;
+}
+.chat__contact__pic {
+  height: 56px;
+  width: 56px;
+  border-radius: 50%;
+  font-size: 35px;
+  font-weight: 700;
+  background-color: #F2F2F2;
+  color: #828A8E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chat__contact__online {
+  position: absolute;
+  z-index: 12;
+  bottom: 0;
+  right: 0;
+  height: 19px;
+  width: 19px;
+  border-radius: 50%;
+  border: 3px solid white;
+  background-color: #25BB75;
+}
+
+.chat__contact__name {
+  flex: 1 1 auto;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+
+
+.chat__messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat__date {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: #B0B2B3;
+}
+.chat__msg-container {
+  display: flex;
+}
+.chat__msg {
+  padding: 12px 16px;
+  margin: 2px;
+  border-radius: 20px;
+  line-height: 21px;
+}
+.chat__msg--side1 {
+  background-color: #F2F2F2;
+}
+.chat__msg--side2 {
+  background-color: #298FED;
+  color: white;
+}
+.chat__msg__pic {
+  height: 40px;
+  width: 40px;
+  margin-right: 8px;
+  border-radius: 50%;
+  font-size: 22px;
+  font-weight: 700;
+  background-color: #F2F2F2;
+  color: #828A8E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+
+
+
+
+
+.chat__msg-input {
+  padding-left: 16px;
+  border-radius: 20px;
+  border: 1px solid #B0B2B3;
+  display: flex;
+}
+.chat__msg-input__textarea {
+  padding: 12px 0px;
+  flex: 1 1 auto;
+  border: none;
+  resize: none;
+  appearance: none;
+  font-size: 14px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  line-height: 21px;
+}
+.chat__msg-input__textarea:focus {
+  outline: none;
+}
+
+
+.chat__msg-input__input input:focus {
+  outline: none;
+}
+
+.chat__msg-input__btns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+.chat__msg-input__btn {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+}
+
+
+.auth-form input {
+  border: none;
+  font-size: 16px;
+}
+.auth-form input:focus {
+  outline: none;
+}
+
+
+
+
+
+
+
+
+
+
+/* AUTH */
+.auth {
+  max-width: 1440px;
+  height: 100vh;
+  margin: 0 auto;
+}
+.auth__header {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.auth__header-wrapper {
+  margin-top: 35px;
+  flex: 1 1 auto;
+  display: flex;
+  max-width: 960px;
+}
+.logo {
+  width: 30px;
+  height: 30px;
+  background-color: black;
+  flex: 0 0 auto;
+}
+.auth__header-link {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.auth__header-link span {
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+}
+.auth__header-link a {
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 700;
+  margin-left: 5px;
+  color: #298FED;
+}
+
+
+.auth__content {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.auth__content-wrapper {}
+
+.auth__content-welcome {
+  font-size: 42px;
+  line-height: 46px;
+  font-weight: 700;
+  margin-bottom: 39px;
+}
+
 .auth-form,
 .auth-form ul,
 .auth-form li,
@@ -248,6 +515,7 @@ menu, ol, ul {
 .auth-form input {
   width: 100%;
 }
+
 .auth-form li {
   margin-top: 10px;
 }
@@ -262,36 +530,81 @@ menu, ol, ul {
   outline: none;
 }
 .auth-inp-wrapper {
-  margin-top: 10px;
-  display: block;
-  height: 32px;
-  padding: 0 10px;
-  border: 1px solid rgb(100, 100, 100);
+  margin: 16px auto;
+  width: 328px;
+  padding: 11px 16px 11px 16px;
+  border: 1px solid #B0B2B3;
+  border-radius: 20px;
   display: flex;
+}
+#eye-opened {
+  margin-right: 1px;
+}
+.auth-symbol {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.auth-inp-wrapper input {
+  margin-left: 10px;
+  font-size: 14px;
+  line-height: 21px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: #333738;
+}
+.auth-inp-wrapper input::placeholder {
+  color: #B0B2B3;
 }
 .auth-inp-wrapper:focus-within {
   outline: currentColors solid 1px;
 }
-.show-passw {
+
+.auth__signin-extra {
+  width: 328px;
+  margin: 16px auto;
+  padding: 0 6px;
+  display: flex;
+}
+.auth__signin-extra-checkbox {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.checkbox-symb-label {
+  margin-left: 10px;
+}
+.auth__signin-extra-reminder {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: flex-end;
+  color: #298FED;
+}
+
+.passw-symb {
   display: flex;
   align-items: center;
 }
-.show-passw:hover {
+.passw-symb:hover {
   cursor: pointer;
 }
 
 .auth-btn {
-  margin-top: 20px;
-  font-size: 1rem;
-  letter-spacing: 0.03rem;
   appearance: none;
   border: none;
-  background-color: #333333;
-  color: #FFF;
-  padding: 12px;
-  transition: all 0.2s ease;
+  margin: 32px auto 0 auto;
+  width: 328px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  color: #FFFFFF;
+  padding: 12px 0;
+  background-color: #ED7029;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 .auth-btn:hover {
   cursor: pointer;
-  background-color: black;
 }
