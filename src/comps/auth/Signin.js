@@ -1,35 +1,38 @@
 import Cookies from 'js-cookie';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 
 import CheckboxSymb from './CheckboxSymb';
 import PasswSymb from './PasswSymb';
+import { UserContext } from './../../App.js';
 
 
-function Signin(props) {
+function Signin() {
     const [name, setName] = useState("");
     const [passw, setPassw] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [passwShow, setPasswShow] = useState(false);
     const [keepSignedIn, setKeepSignedIn] = useState(true);
+    const { user, setUser } = useContext(UserContext);
+    const [warnMsg, setWarnMsg] = useState(null);
 
     async function doAuth() {
         if (isSending) {
-        return null;
+            return null;
         }
         setIsSending(true);
         doPostReq().then(() => {
-        props.setSignedIn(true);
-        setIsSending(false);
-        return (<Redirect to="/" />);
+            setIsSending(false);
+            setWarnMsg(null);
+            return (<Redirect to="/" />);
         }).catch(e => {
-        console.log('Got error during fetch: ' + e.message);
-        // add a message to frontend about failure to find account or other
+            setIsSending(false);
+            setWarnMsg(e.message);
         });
     }
 
     async function doPostReq() {
-        let authUrl = "http://127.0.0.1:8000/api/accounts/signin";
+        let authUrl = 'http://' + window.location.host + '/api/accounts/signin';
         let headers = new Headers();
         headers.append('X-CSRFToken', Cookies.get('csrftoken'));
 
@@ -39,13 +42,15 @@ function Signin(props) {
         authForm.set('keep_signed_in', keepSignedIn);
         
         let resp = await fetch(authUrl, {
-        method: 'post',
-        headers: headers,
-        body: authForm,
-        credentials: 'include',
+            method: 'post',
+            headers: headers,
+            body: authForm,
+            credentials: 'include',
         });
-        if (!resp.ok) {
-        throw new Error(`HTTP resp with status ${resp.status}`);
+        if (resp.ok) {
+            setUser(await resp.json());
+        } else {
+            throw new Error("Incorrect email address or password or account is inactive");
         }
         return null;
     }
@@ -104,6 +109,11 @@ function Signin(props) {
                 </li>
                 <li>
                     <button class="auth-btn" type="button" disabled={isSending} onClick={() => doAuth()}>Sign in</button>
+                </li>
+                <li>
+                    <div class="auth-warn-wrapper">
+                        <div class={`auth-warn${warnMsg ? "" : " display-none"}`}>{warnMsg}</div>
+                    </div>
                 </li>
                 </ul>
             </form>

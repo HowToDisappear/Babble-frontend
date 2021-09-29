@@ -6,8 +6,22 @@ function MsgInput(props) {
     const [ht, setHt] = useState(null);
     const [resize, setResize] = useState(-1);
   
-    // props.clientWs
-    var inp = (
+
+    function msgSubmit() {
+      props.clientWs.current.send(JSON.stringify({
+        'type': 'chat.input',
+        'account': props.acc.id,
+        'message': props.msgInp.get(props.acc.id),
+      }));
+      props.setMsgInp(() => {
+        let m = new Map(props.msgInp);
+        m.set(props.acc.id, '');
+        return m;
+      });
+    }
+
+    let keyStore = new Set();
+    let inp = (
       <textarea
       class="chat__msg-input__textarea"
       spellCheck="true"
@@ -22,8 +36,15 @@ function MsgInput(props) {
           m.set(props.acc.id, evt.target.value);
           return m;
         });
-        // props.setMsgInp(evt.target.value);
       }}
+      onKeyDown={(evt) => {
+        keyStore.add(evt.key);
+        if (keyStore.has('Enter') && !keyStore.has('Shift')) {
+          evt.preventDefault();
+          msgSubmit();
+        }
+      }}
+      onKeyUp={(evt) => keyStore.delete(evt.key)}
       ref={txtAr}
       style={{height: `${ht ? `${ht}px` : 'auto'}`}}
       ></textarea>
@@ -36,7 +57,6 @@ function MsgInput(props) {
     useEffect(() => {
       setHt(txtAr.current.scrollHeight);
     }, [resize]);
-  
   
     useEffect(() => {
       setHt(txtAr.current.scrollHeight);
@@ -58,17 +78,9 @@ function MsgInput(props) {
       {console.log('rendering MsgInput')}
         {inp}
         <div class="chat__msg-input__btns">
-          <div class="chat__msg-input__btn" onClick={() => {
-            props.clientWs.current.send(JSON.stringify({
-              'account': props.acc.id,
-              'message': props.msgInp.get(props.acc.id),
-            }));
-            props.setMsgInp(() => {
-              let m = new Map(props.msgInp);
-              m.set(props.acc.id, '');
-              return m;
-            });
-          }}>{btn}</div>
+          <div class="chat__msg-input__btn" onClick={() => msgSubmit()}>
+            {props.msgInp.get(props.acc.id) ? btnAct : btn}
+          </div>
         </div>
       </div>
     );

@@ -18,6 +18,9 @@ function Contact(props) {
           <div class="sidebar__contact__name">
             {`${acc.user.first_name} ${acc.user.last_name}`}
           </div>
+          <div class={`sidebar__contact__unread${props.unread ? "" : " display-none"}`}>
+            {props.unread}
+          </div>
         </div>
       );
     } else if (props.type === 'chat') {
