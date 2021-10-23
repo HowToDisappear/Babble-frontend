@@ -25,37 +25,242 @@ const UserContext = React.createContext({
 export {UserContext};
 
 
+const GROUP = [
+  {
+      "id": 1,
+      "name": "mygroup",
+      "topic_set": [
+          {
+              "title": "General",
+              "groupmessage_set": []
+          },
+          {
+              "title": "hello world",
+              "groupmessage_set": []
+          },
+          {
+              "title": "random talks",
+              "groupmessage_set": []
+          }
+      ],
+      "membership_set": [
+          {
+              "account": {
+                  "id": 1,
+                  "user": {
+                      "id": 2,
+                      "username": "john@mail.com",
+                      "email": "john@mail.com",
+                      "first_name": "",
+                      "last_name": ""
+                  },
+                  "username": "john",
+                  "image": null
+              },
+              "status": 2
+          }
+      ]
+  },
+  {
+      "id": 2,
+      "name": "othergroup",
+      "topic_set": [
+          {
+              "title": "green",
+              "groupmessage_set": [
+                  {
+                      "id": 1,
+                      "sender": 2,
+                      "topic": 4,
+                      "timestamp": "2021-10-03T08:15:04.895903Z",
+                      "text": "hello everyone!",
+                      "read_status": []
+                  },
+                  {
+                      "id": 2,
+                      "sender": 4,
+                      "topic": 4,
+                      "timestamp": "2021-10-03T08:16:08.059080Z",
+                      "text": "hi dawg how are you?",
+                      "read_status": []
+                  },
+                  {
+                      "id": 3,
+                      "sender": 1,
+                      "topic": 4,
+                      "timestamp": "2021-10-03T08:16:31.034244Z",
+                      "text": "how are you guys?",
+                      "read_status": []
+                  }
+              ]
+          },
+          {
+              "title": "red",
+              "groupmessage_set": [
+                  {
+                      "id": 4,
+                      "sender": 2,
+                      "topic": 5,
+                      "timestamp": "2021-10-03T08:16:58.066105Z",
+                      "text": "what a lovely day",
+                      "read_status": []
+                  },
+                  {
+                      "id": 5,
+                      "sender": 1,
+                      "topic": 5,
+                      "timestamp": "2021-10-03T08:17:15.966892Z",
+                      "text": "yeah sure",
+                      "read_status": []
+                  },
+                  {
+                      "id": 6,
+                      "sender": 4,
+                      "topic": 5,
+                      "timestamp": "2021-10-03T08:17:31.587814Z",
+                      "text": "sun is shining!",
+                      "read_status": []
+                  }
+              ]
+          },
+          {
+              "title": "blue",
+              "groupmessage_set": []
+          }
+      ],
+      "membership_set": [
+          {
+              "account": {
+                  "id": 1,
+                  "user": {
+                      "id": 2,
+                      "username": "john@mail.com",
+                      "email": "john@mail.com",
+                      "first_name": "",
+                      "last_name": ""
+                  },
+                  "username": "john",
+                  "image": null
+              },
+              "status": 2
+          },
+          {
+              "account": {
+                  "id": 2,
+                  "user": {
+                      "id": 3,
+                      "username": "gill@mail.com",
+                      "email": "gill@mail.com",
+                      "first_name": "",
+                      "last_name": ""
+                  },
+                  "username": "gill",
+                  "image": null
+              },
+              "status": 1
+          },
+          {
+              "account": {
+                  "id": 4,
+                  "user": {
+                      "id": 5,
+                      "username": "mike@mail.com",
+                      "email": "mike@mail.com",
+                      "first_name": "",
+                      "last_name": ""
+                  },
+                  "username": "mike",
+                  "image": null
+              },
+              "status": 1
+          }
+      ]
+  },
+  {
+      "id": 3,
+      "name": "anothergroup",
+      "topic_set": [
+          {
+              "title": "Velvet Underground",
+              "groupmessage_set": [
+                  {
+                      "id": 7,
+                      "sender": 4,
+                      "topic": 7,
+                      "timestamp": "2021-10-03T08:19:43.013190Z",
+                      "text": "hey guys whats you favourite track?",
+                      "read_status": []
+                  },
+                  {
+                      "id": 8,
+                      "sender": 2,
+                      "topic": 7,
+                      "timestamp": "2021-10-03T08:20:08.440525Z",
+                      "text": "I think Heroine is the best!",
+                      "read_status": []
+                  }
+              ]
+          }
+      ],
+      "membership_set": [
+          {
+              "account": {
+                  "id": 1,
+                  "user": {
+                      "id": 2,
+                      "username": "john@mail.com",
+                      "email": "john@mail.com",
+                      "first_name": "",
+                      "last_name": ""
+                  },
+                  "username": "john",
+                  "image": null
+              },
+              "status": 1
+          },
+          {
+              "account": {
+                  "id": 2,
+                  "user": {
+                      "id": 3,
+                      "username": "gill@mail.com",
+                      "email": "gill@mail.com",
+                      "first_name": "",
+                      "last_name": ""
+                  },
+                  "username": "gill",
+                  "image": null
+              },
+              "status": 1
+          },
+          {
+              "account": {
+                  "id": 4,
+                  "user": {
+                      "id": 5,
+                      "username": "mike@mail.com",
+                      "email": "mike@mail.com",
+                      "first_name": "",
+                      "last_name": ""
+                  },
+                  "username": "mike",
+                  "image": null
+              },
+              "status": 2
+          }
+      ]
+  }
+]
+
 
 // function App() {
-//   const inp = useRef(null);
-//   const [pic, setPic] = useState(null);
-
 //   return (
-//     <div class="test-wrapper">
-//       {console.log('rendering in app')}
-//       <h2 class="test-title">De Finibus Bonorum et Malorum</h2>
-//       <p class="test-text">
-//         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-//       </p>
-//       <div class="test-avatar">
-//         <div class="test-avatar-title"></div>
-//         <div class="test-avatar-pic"></div>
-//         <div class="test-avatar-buttons">
-//           <input
-//           type="file"
-//           accept="image/*"
-//           ref={inp}
-//           onChange={() => setPic(inp.current.files[0])}
-//           />
-//         </div>
-//         {pic ? <Avatar blob={pic} setBlob={setPic} /> : <div>Lorem ipsum dolor sit amet</div>}
-//       </div>
-//     </div>
+//     <div class="container">
+//     <Sidebar />
+//     <Content />
+//   </div>
 //   );
 // }
-
-
-
 
 
 
@@ -104,18 +309,16 @@ function App() {
 
 
 function Container(props) {
-  const [contacts, setContacts] = useState(null);
-  const [updCont, setUpdCont] = useState(-1);
-  const clientWs = useRef(null);
+  const [directMessages, setDirectMessages] = useState(null);
+  const [groupMessages, setGroupMessages] = useState(null);
   const [isOnline, setIsOnline] = useState(new Set());
-  const [chats, setChats] = useState(null);
-  const [unreadMsg, setUnreadMsg] = useState(null);
+  const clientWs = useRef(null);
   const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
-    // getting contacts from db
-    console.log('fetching contacts');
-    fetch("http://127.0.0.1:8000/api/accounts/contacts")
+    // getting direct messages from db
+    console.log('fetching direct messages');
+    fetch("http://127.0.0.1:8000/api/chats/dm")
     .then(resp => {
       if (!resp.ok) {
         throw new Error(`HTTP error status: ${resp.status}`);
@@ -123,58 +326,28 @@ function Container(props) {
       return resp.json();
     })
     .then(json => {
-      console.log('setting contacts');
-      setContacts(json.contact_list);
-    });
-  }, [updCont]);
-
-  useEffect(() => {
-    // getting chats from db
-    console.log('fetching chats');
-    fetch("http://127.0.0.1:8000/api/chats/")
-    .then(resp => {
-      if (!resp.ok) {
-        throw new Error(`HTTP error status: ${resp.status}`);
-      }
-      return resp.json();
-    })
-    .then(json => {
-      console.log('setting chats');
-      setChats(json);
-      console.log('updating unread');
-      updateUnread(json);
+      console.log('---------------------> logging direct messages');
+      console.log(json);
+      setDirectMessages(json);
     });
   }, []);
 
-  function updateUnread(updatedChats) {
-    const unread = new Map();
-    for (const cont in updatedChats) {
-      if (updatedChats[cont]) {
-        let i = 0;
-        for (const msg of updatedChats[cont]) {
-          if (!msg.read && msg.sender !== user.id) {
-            i++;
-          }
-        }
-        unread.set(parseInt(cont), i);
+  useEffect(() => {
+    // getting groups from db
+    console.log('fetching groups');
+    fetch("http://127.0.0.1:8000/api/groups/")
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(`HTTP error status: ${resp.status}`);
       }
-    }
-    console.log('updating unread messages');
-    setUnreadMsg(unread);
-  }
-
-  function chatsCopy(prevChats) {
-    var copy = {};
-    for (const accId in prevChats) {
-      copy[accId] = [];
-      if (prevChats[accId]) {
-        for (const msg of prevChats[accId]) {
-          copy[accId].push({...msg});
-        }
-      }
-    }
-    return copy;
-  }
+      return resp.json();
+    })
+    .then(json => {
+      console.log(json);
+      console.log('setting group chats');
+      setGroupMessages(json);
+    });
+  }, []);
 
   useEffect(() => {
     // creating websocket and defining handlers for messages
@@ -189,46 +362,91 @@ function Container(props) {
       const data = JSON.parse(e.data);
       console.log('logging message data:');
       console.log(data);
-
       if (data.type === 'status.message') {
         if (data.content.status === 'online') {
-          console.log("in online clause update:");
-          setIsOnline(() => {
-            let copy = new Set(isOnline);
+          setIsOnline((prevState) => {
+            let copy = new Set(prevState);
             copy.add(parseInt(data.content.account));
             return copy;
           });
         } else if (data.content.status === 'offline') {
-          console.log("in offline clause update:");
-          setIsOnline(() => {
-            let copy = new Set(isOnline);
+          setIsOnline((prevState) => {
+            let copy = new Set(prevState);
             copy.delete(parseInt(data.content.account));
             return copy;
           });
         } else {
           console.log('wrong status!');
         }
-      } else if (data.type === 'chat.message') {
-        setChats((prevState) => {
-          let copy = chatsCopy(prevState);
-          console.log('returning copy');
-          console.log(copy);
+      } else if (data.type === 'direct.message') {
+        setDirectMessages((prevState) => {
+          let copy = prevState.map((acc) => {
+            return {
+              ...acc,
+              'user': {...acc.user},
+              'directmessage_set': acc.directmessage_set.map((msg) => {
+                return {...msg};
+              })
+            };
+          });
           if (user.id === data.content.sender) {
-            copy[data.content.recipient].push({...data.content});
+            for (const acc of copy) {
+              if (acc.id === data.content.recipient) {
+                acc.directmessage_set.push({...data.content});
+                return copy;
+              }
+            }
           } else {
-            copy[data.content.sender].push({...data.content});
-            console.log('updating unread messages');
-            updateUnread(copy);  
+            for (const acc of copy) {
+              if (acc.id === data.content.sender) {
+                acc.directmessage_set.push({...data.content});
+                return copy;
+              }
+            }
           }
-          console.log('returning updated copy');
-          console.log(copy);
+          return copy;
+        });
+      } else if (data.type === 'group.message') {
+        setGroupMessages((prevState) => {
+          let copy = prevState.map((group) => {
+            return {
+              ...group,
+              'topic_set': group.topic_set.map((topic) => {
+                return {
+                  ...topic,
+                  'groupmessage_set': topic.groupmessage_set.map((msg) => {
+                    return {...msg}
+                  })
+                }
+              }),
+              'membership_set': group.membership_set.map((membership) => {
+                return {
+                  ...membership,
+                  'account': {
+                    ...membership.account,
+                    'user': {...membership.account.user}
+                  }
+                }
+              })
+            }
+          });
+          for (const group of copy) {
+            if (group.id === data.content.recipient) {
+              for (const topic of group.topic_set) {
+                if (topic.id === data.content.topic) {
+                  topic.groupmessage_set.push({...data.content});
+                  return copy;
+                }
+              }
+            }
+          }
           return copy;
         });
       }
     };
   }, []);
 
-  if (contacts === null || clientWs === null || chats === null || unreadMsg === null) {
+  if (clientWs === null || directMessages === null || groupMessages === null) {
     return <div></div>;
   }
 
@@ -236,19 +454,19 @@ function Container(props) {
     <div class="container">
       {console.log("rendering in container")}
       <Sidebar
-      contacts={contacts}
+      user={user}
+      directMessages={directMessages}
+      groupMessages={groupMessages}
       isOnline={isOnline}
-      unreadMsg={unreadMsg}
       />
       <Content
-      contacts={contacts}
+      clientWs={clientWs}
       isOnline={isOnline}
-      chats={chats}
-      setChats={setChats}
-      chatsCopy={chatsCopy}
-      unreadMsg={unreadMsg}
-      updateUnread={updateUnread}
-      clientWs={clientWs} />
+      directMessages={directMessages}
+      setDirectMessages={setDirectMessages}
+      groupMessages={groupMessages}
+      setGroupMessages={setGroupMessages}
+      />
     </div>
   );
 }

@@ -5,27 +5,34 @@ import Contact from './../Contact.js';
 
 
 function SidebarContacts(props) {
-    const contacts = props.contacts;
-    const conts = contacts.map(cont =>
-      <NavLink to={`/chats/${cont.to_account.id}`} activeClassName="sidebar__contact--selected">
-        <Contact
-        acc={cont.to_account}
-        online={props.isOnline.has(cont.to_account.id)}
-        unread={props.unreadMsg.get(cont.to_account.id)}
-        type="sidebar"
-        />
-      </NavLink>
-    );
-    return (
-      <div class="sidebar__contacts">
-        <div class="sidebar__contacts__header">
-          <h5>CONTACTS</h5>
-          {console.log("rendering in SidebarContacts")}
-          <span></span>
-        </div>
-        {conts}
-      </div>
-    );
+  // AccObj: user, Array: directMessages, Set: isOnline
+
+  function countUnread(msg_set) {
+    // Array: msg_set
+    let i = 0;
+    for (const msg of msg_set) {
+      if (!msg.read && (msg.sender !== props.user.id)) {
+        i++;
+      }
+    }
+    return i;
+  }
+
+  const conts = props.directMessages.map(cont =>
+    <NavLink to={`/chats/${cont.id}`} activeClassName="sidebar__contact--selected">
+      <Contact
+      acc={cont}
+      online={props.isOnline.has(cont.id)}
+      unread={countUnread(cont.directmessage_set)}
+      type="sidebar"
+      />
+    </NavLink>
+  );
+  return (
+    <div class="sidebar__contacts">
+      {conts}
+    </div>
+  );
 }
 
 

@@ -5,18 +5,24 @@ import { Link, NavLink } from 'react-router-dom';
 function SidebarNav(props) {
     return (
       <div class="sidebar__nav">
-        <NavLink to="/contacts" activeClassName="sidebar__nav__item--selected">
+        <Link to="/settings">
           <div class="sidebar__nav__item">
-            <div class="sidebar__nav__icon"></div>
-            <div>Contacts</div>
+            <div class="sidebar__nav__item-symb"></div>
+            <div class="sidebar__nav__item-text">Settings</div>
           </div>
-        </NavLink>
-        <NavLink to={`/settings`} activeClassName="sidebar__nav__item--selected">
+        </Link>
+        <Link to="/groups">
           <div class="sidebar__nav__item">
-            <div class="sidebar__nav__icon"></div>
-            <div>Settings</div>
+            <div class="sidebar__nav__item-symb"></div>
+            <div class="sidebar__nav__item-text">Groups</div>
           </div>
-        </NavLink>
+        </Link>
+        <Link to="/messages">
+          <div class="sidebar__nav__item">
+            <div class="sidebar__nav__item-symb"></div>
+            <div class="sidebar__nav__item-text">Messages</div>
+          </div>
+        </Link>
       </div>
     );
 }

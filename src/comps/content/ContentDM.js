@@ -1,60 +1,107 @@
 import { findAllByTestId } from '@testing-library/dom';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from "react-router-dom";
 
-import Contact from './../Contact.js';
+import Contact from '../Contact.js';
 import MsgInput from './MsgInput.js';
+import { UserContext } from '../../App.js';
 
 
-function ContentChat(props) {
-    // props - contacts: Array of Contact(s), isOnline: Set (of acc ids), chats, clientWs
-    // const [msgInp, setMsgInp] = useState("");
+function ContentDM(props) {
+    const { user, setUser } = useContext(UserContext);
     let {contId} = useParams();
     contId = parseInt(contId);
+    const txtAr = useRef(null);
+    const bottom = useRef(null);
 
-    var cont = (() => {
-      const contactList = props.contacts;
-      for (const contact of contactList) {
-        if (contact.to_account.id == contId) {
-          return contact;
+    useEffect(() => {
+      bottom.current.focus();
+    });
+
+    // select contact (existing or from group)
+    const cont = (() => {
+      for (const acc of props.directMessages) {
+        if (acc.id == contId) {
+          return acc;
+        }
+      }
+      for (const group of props.groupMessages) {
+        for (const member of group.membership_set) {
+          if (member.account.id == contId) {
+            return member.account;
+          }
         }
       }
     })();
-    console.log(cont);
-    // add url for profile img
-    const avatar = cont.to_account.user.first_name[0];
 
-    if (props.unreadMsg.get(contId)) {
-      props.setChats((prevState) => {
-        let copy = props.chatsCopy(prevState);
-        if (copy[contId]) {
-          for (const msg of copy[contId]) {
-            if (msg.sender === contId && !msg.read) {
-              msg.read = true;
-            }
-          }
-        }
-        console.log('updating unread messages');
-        props.updateUnread(copy);
-        return copy;
-      });
-      props.clientWs.current.send(JSON.stringify({
-        'type': 'chat.read',
-        'account': contId,
-      }));
-    }
+    // retrieve direct messages set
+    let chat = cont.hasOwnProperty('directmessage_set')
+    ? cont.directmessage_set
+    : [];
     
-    console.log(props.chats);
-    var chat = props.chats[contId];
+    // check for unread messages
+    let unread = (() => {
+      for (const msg of chat) {
+        if (!msg.read && (msg.recipient === user.id)) {
+          return true;
+        }
+      }
+      return false;
+    })();
+
+    // if any unread, then set contact's messages read status to true
+    if (unread) {
+      props.setDirectMessages((prevState) => {
+        console.log('*** setting read status')
+        // notifying server
+        props.clientWs.current.send(JSON.stringify({
+          'type': 'chat.read',
+          'account': contId,
+        }));
+        // updating client app messages state
+        let updatedArr = prevState.map((acc) => {
+          if (acc.id === contId) {
+            return {
+              ...acc,
+              'user': {...acc.user},
+              'directmessage_set': acc.directmessage_set.map((msg) => {
+                if (msg.sender === contId) {
+                  return {
+                    ...msg,
+                    'read': true
+                  };
+                } else {
+                  return {...msg};
+                }
+              })
+            };  
+          } else {
+            return {
+              ...acc,
+              'user': {...acc.user},
+              'directmessage_set': acc.directmessage_set.map((msg) => {
+                return {...msg};
+              })
+            };  
+          }
+        });
+        return updatedArr;
+      });
+    }
+
+    const userAvatar = user.image
+    ? <img class="chat__msg__pic" src={user.image}/>
+    : <div>{user.username[0]}</div>;
+    const contactAvatar = cont.image
+    ? <img class="chat__msg__pic" src={cont.image}/>
+    : <div>{cont.username[0]}</div>;
+
     for (let msg of chat) {
       msg.timestamp = new Date(msg.timestamp);
     }
-
     chat = chat.sort((el1, el2) => {
       return el1.timestamp - el2.timestamp;
     });
-
-    console.log('redefining initial dates now');
     let now = new Date();
     let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     let showDate = new Date(today);
@@ -96,7 +143,11 @@ function ContentChat(props) {
           </div>
           <div class="chat__msg-container">
             <div class="chat__msg__pic-wrapper">
-              <div class={`chat__msg__pic${newSender ? "" : " display-none"}`}>{(msg.sender == contId) ? avatar : 'U'}</div>
+              <div class={`chat__msg__pic${newSender ? "" : " display-none"}`}>
+                {msg.sender === user.id
+                ? userAvatar
+                : contactAvatar}
+              </div>
             </div>
             <div key={msg.id.toString()} class={`chat__msg ${(msg.sender == contId) ? 'chat__msg--side1' : 'chat__msg--side2'}`}>
               {msg.text}
@@ -111,16 +162,25 @@ function ContentChat(props) {
         {console.log('rendering ContentChat')}
         <header class="content__header"></header>
         <main class="chat">
-          <div class="chat-upper-wrap" >
+          <div class="chat-upper-wrap">
             <div class="chat__contact-wrapper">
-              <Contact acc={cont.to_account} online={props.isOnline.has(cont.to_account.id)} type="chat"/>
+              <Contact acc={cont} online={props.isOnline.has(cont.id)} type="chat"/>
             </div>
             <div class="chat__messages">
               {chat}
+            <input id="chat-bottom" ref={bottom} autoFocus onFocus={() => txtAr.current.focus()} />
             </div>
           </div>
           <div class="chat-lower-wrap">
-            <MsgInput acc={cont.to_account} msgInp={props.msgInp} setMsgInp={props.setMsgInp} clientWs={props.clientWs} />
+            <MsgInput
+            type={'dm'}
+            txtAr={txtAr}
+            name={cont.username}
+            accId={cont.id}
+            msgInp={props.msgInp}
+            setMsgInp={props.setMsgInp}
+            clientWs={props.clientWs}
+            />
           </div>
         </main>
       </React.Fragment>
@@ -128,4 +188,4 @@ function ContentChat(props) {
 }
 
 
-export default ContentChat;
+export default ContentDM;

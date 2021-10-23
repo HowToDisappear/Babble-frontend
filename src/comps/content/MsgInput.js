@@ -2,20 +2,32 @@ import React, { useEffect, useState, useRef } from 'react';
 
 
 function MsgInput(props) {
-    const txtAr = useRef(null);
+    // const txtAr = useRef(null);
     const [ht, setHt] = useState(null);
     const [resize, setResize] = useState(-1);
-  
-
+    const txtAr = props.txtAr;
+    const msgInpKey = (props.type === 'dm')
+    ? `dm:${props.accId}`
+    : `gm:${props.groupId}:${props.topicId}`;
+    
     function msgSubmit() {
-      props.clientWs.current.send(JSON.stringify({
-        'type': 'chat.input',
-        'account': props.acc.id,
-        'message': props.msgInp.get(props.acc.id),
-      }));
+      if (props.type === 'dm') {
+        props.clientWs.current.send(JSON.stringify({
+          'type': 'direct.message',
+          'account': props.accId,
+          'message': props.msgInp.get(msgInpKey),
+        }));  
+      } else if (props.type === 'gm') {
+        props.clientWs.current.send(JSON.stringify({
+          'type': 'group.message',
+          'group': props.groupId,
+          'topic': props.topicId,
+          'message': props.msgInp.get(msgInpKey),
+        }));  
+      }
       props.setMsgInp(() => {
         let m = new Map(props.msgInp);
-        m.set(props.acc.id, '');
+        m.set(msgInpKey, '');
         return m;
       });
     }
@@ -27,13 +39,13 @@ function MsgInput(props) {
       spellCheck="true"
       autoCorrect="off"
       rows="1"
-      placeholder={`Message ${props.acc.user.first_name} ${props.acc.user.last_name}...`}
-      value={props.msgInp.has(props.acc.id) ? props.msgInp.get(props.acc.id) : ''}
+      placeholder={`Message ${props.name}...`}
+      value={props.msgInp.has(msgInpKey) ? props.msgInp.get(msgInpKey) : ''}
       onChange={(evt) => {
         setHt(null);
         props.setMsgInp(() => {
           let m = new Map(props.msgInp);
-          m.set(props.acc.id, evt.target.value);
+          m.set(msgInpKey, evt.target.value);
           return m;
         });
       }}
@@ -79,7 +91,7 @@ function MsgInput(props) {
         {inp}
         <div class="chat__msg-input__btns">
           <div class="chat__msg-input__btn" onClick={() => msgSubmit()}>
-            {props.msgInp.get(props.acc.id) ? btnAct : btn}
+            {props.msgInp.get(msgInpKey) ? btnAct : btn}
           </div>
         </div>
       </div>

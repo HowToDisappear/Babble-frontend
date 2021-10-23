@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import ContentContacts from './ContentContacts.js';
-import ContentChat from './ContentChat.js';
+import ContentDM from './ContentDM.js';
+import ContentGM from './ContentGM.js';
 import ContentSettings from './settings/ContentSettings.js';
 
 
@@ -14,26 +15,37 @@ function Content(props) {
       <div class="content">
         {console.log('rendering in Content')}
         <Switch>
+
+          <Route path="/groups/:groupId/:topicId">
+            <ContentGM
+            clientWs={props.clientWs}
+            msgInp={msgInp}
+            setMsgInp={setMsgInp}
+            isOnline={props.isOnline}
+            groupMessages={props.groupMessages}
+            />
+          </Route>
+
+          <Route path="/chats/:contId">
+            <ContentDM
+            clientWs={props.clientWs}
+            msgInp={msgInp}
+            setMsgInp={setMsgInp}
+            isOnline={props.isOnline}
+            directMessages={props.directMessages}
+            setDirectMessages={props.setDirectMessages}
+            groupMessages={props.groupMessages}
+            />
+          </Route>
+
           <Route path="/settings">
             <ContentSettings />
           </Route>
+
           <Route path="/contacts">
             <ContentContacts contacts={props.contacts} />
           </Route>
-          <Route path="/chats/:contId">
-            <ContentChat
-            chats={props.chats}
-            setChats={props.setChats}
-            chatsCopy={props.chatsCopy}
-            unreadMsg={props.unreadMsg}
-            updateUnread={props.updateUnread}
-            contacts={props.contacts}
-            isOnline={props.isOnline}
-            msgInp={msgInp}
-            setMsgInp={setMsgInp}
-            clientWs={props.clientWs}
-            />
-          </Route>
+          
         </Switch>
       </div>
     );

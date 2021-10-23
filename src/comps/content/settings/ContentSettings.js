@@ -1,25 +1,34 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { UserContext } from '../../../App.js';
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import Profile from './Profile.js';
 
 
 function ContentSettings() {
   const { user, setUser } = useContext(UserContext);
-  console.log('printing in Settings');
-  console.log(user);
+  let match = useRouteMatch();
+
   return (
     <div class="settings">
-      <Profile />
       <Switch>
-          <Route path="/profile">
-            <Profile />
-          </Route>
-          <Route path="/preferences">
-            <div><h4>preferences</h4></div>
-          </Route>
-        </Switch>
+        <Route path={`${match.path}/profile`}>
+          <Profile />
+        </Route>
+        <Route path={`${match.path}/account`}>
+          <div>
+            <h2>Account</h2>
+          </div>
+        </Route>
+        <Route path={`${match.path}/preferences`}>
+          <div>
+            <h2>Preferences</h2>
+          </div>
+        </Route>
+        <Route path="">
+          <div>You're in Settings!</div>
+        </Route>
+      </Switch>
     </div>
   );
 }
