@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import SidebarItemHeader from './SidebarItemHeader.js';
+import SidebarItem from './SidebarItem.js';
 import SidebarContacts from './SidebarContacts.js';
 import SidebarGroups from './SidebarGroups.js';
 
@@ -37,28 +37,30 @@ function Sidebar(props) {
       <div class="sidebar__nav-wrapper">
         <div class="sidebar__nav">
 
-          <SidebarItemHeader id={'settings'} name={'Settings'} callBack={null} lvl={1}>
+          <SidebarItem id={'settings'} name={'Settings'} lvl={1}>
             {settingsContent}
-          </SidebarItemHeader>
+          </SidebarItem>
           
-          <SidebarItemHeader id={'groups'} name={'Groups'} callBack={null} lvl={1}>
+          <SidebarItem id={'groups'} name={'Groups'} lvl={1}>
             <SidebarGroups
-            isOnline={props.isOnline}
             groupMessages={props.groupMessages}
+            isOnline={props.isOnline}
             />
-          </SidebarItemHeader>
+          </SidebarItem>
           
-          <SidebarItemHeader
+          <SidebarItem
+          directMessages={props.directMessages}
+          clientWs={props.clientWs}
+          isOnline={props.isOnline}
           id={'messages'}
           name={'Messages'}
-          directMessages={props.directMessages}
-          callBack={null}
           lvl={1}>
             <SidebarContacts
-            user={props.user}
             directMessages={props.directMessages}
-            isOnline={props.isOnline}/>
-          </SidebarItemHeader>
+            isOnline={props.isOnline}
+            user={props.user}
+            />
+          </SidebarItem>
         
         </div>
       </div>

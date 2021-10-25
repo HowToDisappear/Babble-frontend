@@ -314,6 +314,7 @@ function Container(props) {
   const [isOnline, setIsOnline] = useState(new Set());
   const clientWs = useRef(null);
   const { user, setUser } = useContext(UserContext);
+  const [updDM, setUpdDM] = useState(1);
 
   useEffect(() => {
     // getting direct messages from db
@@ -330,7 +331,7 @@ function Container(props) {
       console.log(json);
       setDirectMessages(json);
     });
-  }, []);
+  }, [updDM]);
 
   useEffect(() => {
     // getting groups from db
@@ -442,6 +443,8 @@ function Container(props) {
           }
           return copy;
         });
+      } else if (data.type === 'update.dm') {
+        setUpdDM(prevState => prevState * -1);
       }
     };
   }, []);
@@ -454,6 +457,7 @@ function Container(props) {
     <div class="container">
       {console.log("rendering in container")}
       <Sidebar
+      clientWs={clientWs}
       user={user}
       directMessages={directMessages}
       groupMessages={groupMessages}

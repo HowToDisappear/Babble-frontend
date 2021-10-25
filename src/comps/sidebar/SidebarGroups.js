@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import Contact from './../Contact.js';
-import SidebarItemHeader from './SidebarItemHeader.js';
+import SidebarItem from './SidebarItem.js';
 import SidebarContacts from './SidebarContacts.js';
 
 
@@ -19,31 +19,31 @@ function SidebarGroups(props) {
       </div>
       );
       const ms = group.membership_set.map(member =>
-        <NavLink to={`/chats/${member.account.id}`} activeClassName="sidebar__contact--selected">
+        <div>
           <Contact
           acc={member.account}
           online={props.isOnline.has(member.account.id)}
           unread={null}
           type="sidebar"
           />
-        </NavLink>
+        </div>
       );
       return (
         <React.Fragment>
-          <SidebarItemHeader id={group.name} name={group.name} callBack={null} lvl={2}>
+          <SidebarItem id={group.name} name={group.name} callBack={null} lvl={2}>
 
-            <SidebarItemHeader id={`${group.name}-topics`} name={'Topics'} callBack={null} lvl={3}>
+            <SidebarItem id={`${group.name}-topics`} name={'Topics'} callBack={null} lvl={3}>
               {ts}
-            </SidebarItemHeader>
+            </SidebarItem>
 
-            <SidebarItemHeader id={`${group.name}-members`} name={'Members'} callBack={null} lvl={3}>
+            <SidebarItem id={`${group.name}-members`} name={'Members'} callBack={null} lvl={3}>
               <div>
                 {ms}                
               </div>
 
-            </SidebarItemHeader>
+            </SidebarItem>
 
-          </SidebarItemHeader>
+          </SidebarItem>
         </React.Fragment>
       );
     });
