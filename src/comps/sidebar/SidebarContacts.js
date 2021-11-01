@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import Contact from './../Contact.js';
+import SidebarContact from './SidebarContact.js';
 
 
 function SidebarContacts(props) {
@@ -20,11 +20,12 @@ function SidebarContacts(props) {
 
   const conts = props.directMessages.map(cont =>
     <NavLink to={`/chats/${cont.id}`} activeClassName="sidebar__contact--selected">
-      <Contact
+      <SidebarContact
+      setNotification={props.setNotification}
+      clientWs={props.clientWs}
       acc={cont}
       online={props.isOnline.has(cont.id)}
       unread={countUnread(cont.directmessage_set)}
-      type="sidebar"
       />
     </NavLink>
   );

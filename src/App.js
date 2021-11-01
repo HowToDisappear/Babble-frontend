@@ -315,6 +315,7 @@ function Container(props) {
   const clientWs = useRef(null);
   const { user, setUser } = useContext(UserContext);
   const [updDM, setUpdDM] = useState(1);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     // getting direct messages from db
@@ -456,7 +457,9 @@ function Container(props) {
   return (
     <div class="container">
       {console.log("rendering in container")}
+      {notification ? <Notification obj={notification} setNotification={setNotification} /> : null}
       <Sidebar
+      setNotification={setNotification}
       clientWs={clientWs}
       user={user}
       directMessages={directMessages}
@@ -474,6 +477,29 @@ function Container(props) {
     </div>
   );
 }
+
+
+
+function Notification(props) {
+  const box = useRef(null);
+  const top = window.innerHeight - 70;
+  const left = window.innerWidth/2 - 110;
+  setTimeout(() => props.setNotification(null), props.obj.time);
+  setTimeout(() => box.current.style = (
+    "transform: scale(1);"
+    + `color: ${props.obj.color};`
+    + `top: ${top}px;`
+    + `left: ${left}px;`
+  ), 10);
+  return (
+    <div class="notification-wrapper">
+      <div class="notification" ref={box}>
+        {props.obj.text}
+      </div>
+    </div>
+  );
+}
+
 
 
 export default App;

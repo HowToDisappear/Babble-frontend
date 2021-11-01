@@ -34,7 +34,6 @@ function Content(props) {
             isOnline={props.isOnline}
             directMessages={props.directMessages}
             setDirectMessages={props.setDirectMessages}
-            groupMessages={props.groupMessages}
             />
           </Route>
 

@@ -1,30 +1,41 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import Contact from './../Contact.js';
 import SidebarItem from './SidebarItem.js';
-import SidebarContacts from './SidebarContacts.js';
+import SidebarMember from './SidebarMember.js';
 
 
 function SidebarGroups(props) {
     const groups = props.groupMessages;
 
+    function isInDM(accId) {
+      for (const acc of props.directMessages) {
+        if (acc.id === accId) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     let markup = groups.map((group) => {
-      const ts = group.topic_set.map((topic) => 
-      <div class="sidebar__item__content-unit sidebar__item__content-topic">
-        <NavLink to={`/groups/${group.id}/${topic.id}`} activeClassName="sidebar__contact--selected">
-          <div class="sidebar__item__content-topic-symb"><TopicSymb /></div>
-          <div class="sidebar__item__content-topic-text">{topic.title}</div>
+      const ts = group.topic_set.map((topic) =>
+      <div class="sidebar-unit">
+        <NavLink to={`/groups/${group.id}/${topic.id}`} activeClassName="sidebar-unit--selected">
+          <span class="sidebar-unit__symb"><TopicSymb /></span>
+          <span class="sidebar-unit__text">{topic.title}</span>
         </NavLink>
       </div>
       );
       const ms = group.membership_set.map(member =>
         <div>
-          <Contact
+          <SidebarMember
           acc={member.account}
+          membStatus={member.status}
           online={props.isOnline.has(member.account.id)}
-          unread={null}
-          type="sidebar"
+          inDM={isInDM(member.account.id)}
+          clientWs={props.clientWs}
+          setNotification={props.setNotification}
+          user={props.user}
           />
         </div>
       );
@@ -37,10 +48,7 @@ function SidebarGroups(props) {
             </SidebarItem>
 
             <SidebarItem id={`${group.name}-members`} name={'Members'} callBack={null} lvl={3}>
-              <div>
-                {ms}                
-              </div>
-
+              {ms}
             </SidebarItem>
 
           </SidebarItem>

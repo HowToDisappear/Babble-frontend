@@ -21,16 +21,21 @@ function SidebarItem(props) {
   let symb;
   let extraBtn;
   let modal;
+  let callback;
   switch (props.id) {
     case 'messages':
       symb = <MessagesSymb />;
       extraBtn = <PlusSymb />;
+      callback = () => {
+        setBtnRect(btn.current.getBoundingClientRect());
+        setShowModal('FindUser');
+      };
       switch (showModal) {
         case 'FindUser':
           modal = <ModalFindUser directMessages={props.directMessages} setShowModal={setShowModal} setContact={setContact} btnRect={btnRect} />;
           break;
         case 'User':
-          modal = <ModalUser clientWs={props.clientWs} contact={contact} online={props.isOnline.has(contact.id)} setShowModal={setShowModal} rect={btnRect} />;
+          modal = <ModalUser clientWs={props.clientWs} contact={contact} online={props.isOnline.has(contact.id)} setShowModal={setShowModal} setNotification={props.setNotification} rect={btnRect} inDM={false} />;
           break;
         case 'redirect':
           modal = <Redirect to={`/chats/${contact.id}`} />;
@@ -38,9 +43,24 @@ function SidebarItem(props) {
         default:
           modal = null;
       }
+      break;
     case 'groups':
       symb = <GroupsSymb />;
-      extraBtn = <PlusSymb />;
+      extraBtn = <DotsSymb />;
+      callback = () => {
+        setBtnRect(btn.current.getBoundingClientRect());
+        setShowModal('DotsMenu');
+      };
+      switch (showModal) {
+        case 'DotsMenu':
+          modal = <DotsMenu setShowModal={setShowModal} btnRect={btnRect} items={[]} modals={} />;
+          break;
+        case 'User':
+          modal = <ModalUser clientWs={props.clientWs} contact={contact} online={props.isOnline.has(contact.id)} setShowModal={setShowModal} setNotification={props.setNotification} rect={btnRect} inDM={false} />;
+          break;
+        default:
+          modal = null;
+      }
       break;
     case 'settings':
       symb = <SettingsSymb />;
@@ -68,8 +88,7 @@ function SidebarItem(props) {
         ref={btn}
         class={`sidebar__item__header-right ${extraBtn? "" : " display-none"}`}
         onClick={() => {
-          setBtnRect(btn.current.getBoundingClientRect());
-          setShowModal('FindUser');
+          callback();
         }}>
           {extraBtn}
         </div>
@@ -80,9 +99,7 @@ function SidebarItem(props) {
         {props.children}
       </div>
 
-      {showModal
-      ? <div>{modal}</div>
-      : null}
+      {showModal ? <div>{modal}</div> : null}
 
     </div>
   );
@@ -140,6 +157,45 @@ function PlusSymb() {
     </React.Fragment>
   );
 }
+
+
+function DotsSymb() {
+  return (
+    <React.Fragment>
+      <div class="sidebar__item-extra-plus">
+        <svg width="4" height="16" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M-3.49691e-07 8C-3.97973e-07 9.10457 0.89543 10 2 10C3.10457 10 4 9.10457 4 8C4 6.89543 3.10457 6 2 6C0.89543 6 -3.01409e-07 6.89543 -3.49691e-07 8Z" fill="#0D0D0D"/>
+          <path d="M-8.74228e-08 2C-1.35705e-07 3.10457 0.89543 4 2 4C3.10457 4 4 3.10457 4 2C4 0.89543 3.10457 -3.91405e-08 2 -8.74228e-08C0.895431 -1.35705e-07 -3.91405e-08 0.89543 -8.74228e-08 2Z" fill="#0D0D0D"/>
+          <path d="M-6.11959e-07 14C-6.60242e-07 15.1046 0.89543 16 2 16C3.10457 16 4 15.1046 4 14C4 12.8954 3.10457 12 2 12C0.89543 12 -5.63677e-07 12.8954 -6.11959e-07 14Z" fill="#0D0D0D"/>
+        </svg>
+      </div>
+    </React.Fragment>
+  );
+}
+
+
+
+function DotsMenu(props) {
+  // Callback: setShowModal
+  // DOMRect: btnRect
+  let top = props.btnRect.bottom;
+  let left = props.btnRect.right;
+  let setShowModal;
+
+  return (
+    <div class="dots-menu-wrapper">
+      <div
+      class="dots-menu"
+      style={{
+        top: `${top}px`,
+        left: `${left}px`,
+      }}>{}</div>
+    </div>
+  );
+}
+
+
+
 
 
 export default SidebarItem;

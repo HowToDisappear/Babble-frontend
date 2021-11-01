@@ -12,23 +12,30 @@ function Sidebar(props) {
 
   let settingsContent = (
     <React.Fragment>
-      <NavLink to="/settings/profile" activeClassName="sidebar__contact--selected">
-        <span class="sidebar-symb-placeholder"></span>
-        <div class="sidebar__item__content-unit sidebar__item__content-unit--lvl1">Profile</div>
-      </NavLink>
-      <NavLink to="/settings/account" activeClassName="sidebar__contact--selected">
-        <span class="sidebar-symb-placeholder"></span>
-        <div class="sidebar__item__content-unit sidebar__item__content-unit--lvl1">Account</div>
-      </NavLink>
-      <NavLink to="/settings/preferences" activeClassName="sidebar__contact--selected">
-        <span class="sidebar-symb-placeholder"></span>
-        <div class="sidebar__item__content-unit sidebar__item__content-unit--lvl1">Preferences</div>
-      </NavLink>
+        <div class="sidebar-unit">
+          <NavLink to="/settings/profile" activeClassName="sidebar-unit--selected">
+            <span class="sidebar-unit__symb"></span>
+            <span class="sidebar-unit__text">Profile</span>
+          </NavLink>
+        </div>
+        <div class="sidebar-unit">
+          <NavLink to="/settings/account" activeClassName="sidebar-unit--selected">
+            <span class="sidebar-unit__symb"></span>
+            <span class="sidebar-unit__text">Account</span>
+          </NavLink>
+        </div>
+        <div class="sidebar-unit">
+          <NavLink to="/settings/preferences" activeClassName="sidebar-unit--selected">
+            <span class="sidebar-unit__symb"></span>
+            <span class="sidebar-unit__text">Preferences</span>
+          </NavLink>
+        </div>
     </React.Fragment>
   );
 
   return (
     <div class="sidebar">
+      {console.log('rendering in sidebar')}
 
       <header class="sidebar__header">
         <div class="logo"></div>
@@ -41,10 +48,14 @@ function Sidebar(props) {
             {settingsContent}
           </SidebarItem>
           
-          <SidebarItem id={'groups'} name={'Groups'} lvl={1}>
+          <SidebarItem id={'groups'} name={'Groups'} lvl={1} setNotification={props.setNotification}>
             <SidebarGroups
             groupMessages={props.groupMessages}
+            directMessages={props.directMessages}
+            clientWs={props.clientWs}
             isOnline={props.isOnline}
+            setNotification={props.setNotification}
+            user={props.user}
             />
           </SidebarItem>
           
@@ -52,12 +63,15 @@ function Sidebar(props) {
           directMessages={props.directMessages}
           clientWs={props.clientWs}
           isOnline={props.isOnline}
+          setNotification={props.setNotification}
           id={'messages'}
           name={'Messages'}
           lvl={1}>
             <SidebarContacts
             directMessages={props.directMessages}
+            clientWs={props.clientWs}
             isOnline={props.isOnline}
+            setNotification={props.setNotification}
             user={props.user}
             />
           </SidebarItem>

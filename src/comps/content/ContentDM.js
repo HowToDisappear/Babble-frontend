@@ -1,6 +1,7 @@
 import { findAllByTestId } from '@testing-library/dom';
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 
 import Contact from '../Contact.js';
 import MsgInput from './MsgInput.js';
@@ -14,25 +15,22 @@ function ContentDM(props) {
     const txtAr = useRef(null);
     const bottom = useRef(null);
 
-    useEffect(() => {
-      bottom.current.focus();
-    });
+    // useEffect(() => {
+    //   bottom.current.focus();
+    // });
 
-    // select contact (existing or from group)
+    // select contact
     const cont = (() => {
       for (const acc of props.directMessages) {
         if (acc.id == contId) {
           return acc;
         }
       }
-      for (const group of props.groupMessages) {
-        for (const member of group.membership_set) {
-          if (member.account.id == contId) {
-            return member.account;
-          }
-        }
-      }
+      return null;
     })();
+    if (!cont) {
+      return <Redirect to="/" />;
+    }
 
     // retrieve direct messages set
     let chat = cont.hasOwnProperty('directmessage_set')
@@ -159,7 +157,7 @@ function ContentDM(props) {
   
     return (
       <React.Fragment>
-        {console.log('rendering ContentChat')}
+        {console.log('rendering ContentDM')}
         <header class="content__header"></header>
         <main class="chat">
           <div class="chat-upper-wrap">

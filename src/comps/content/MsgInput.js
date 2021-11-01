@@ -53,7 +53,9 @@ function MsgInput(props) {
         keyStore.add(evt.key);
         if (keyStore.has('Enter') && !keyStore.has('Shift')) {
           evt.preventDefault();
-          msgSubmit();
+          if (props.msgInp.get(msgInpKey)) {
+            msgSubmit();
+          }
         }
       }}
       onKeyUp={(evt) => keyStore.delete(evt.key)}
@@ -90,7 +92,11 @@ function MsgInput(props) {
       {console.log('rendering MsgInput')}
         {inp}
         <div class="chat__msg-input__btns">
-          <div class="chat__msg-input__btn" onClick={() => msgSubmit()}>
+          <div class="chat__msg-input__btn" onClick={() => {
+            if (props.msgInp.get(msgInpKey)) {
+              msgSubmit();
+            }
+          }}>
             {props.msgInp.get(msgInpKey) ? btnAct : btn}
           </div>
         </div>
