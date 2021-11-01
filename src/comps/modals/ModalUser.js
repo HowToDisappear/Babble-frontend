@@ -115,7 +115,7 @@ function ModalUser(props) {
         <div class="modal-contact__username">{acc.username}</div>
         <div class="modal-contact__id">{`id: ${btoa(acc.id)}`}</div>
         <div
-        class={`modal-contact__input ${props.user.id === acc.id ? "display-none" : ""}`}
+        class={`modal-contact__input ${props.userId === acc.id ? "display-none" : ""}`}
         >
           <input
           type="text"

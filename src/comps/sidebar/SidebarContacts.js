@@ -5,7 +5,11 @@ import SidebarContact from './SidebarContact.js';
 
 
 function SidebarContacts(props) {
-  // AccObj: user, Array: directMessages, Set: isOnline
+  // Array: directMessages
+  // WebSocket: clientWs
+  // Set: isOnline
+  // Account obj: user
+  // Callback: setNotification
 
   function countUnread(msg_set) {
     // Array: msg_set
@@ -21,10 +25,10 @@ function SidebarContacts(props) {
   const conts = props.directMessages.map(cont =>
     <NavLink to={`/chats/${cont.id}`} activeClassName="sidebar__contact--selected">
       <SidebarContact
-      setNotification={props.setNotification}
       clientWs={props.clientWs}
-      acc={cont}
       online={props.isOnline.has(cont.id)}
+      setNotification={props.setNotification}
+      acc={cont}
       unread={countUnread(cont.directmessage_set)}
       />
     </NavLink>

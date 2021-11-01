@@ -6,61 +6,68 @@ import SidebarMember from './SidebarMember.js';
 
 
 function SidebarGroups(props) {
-    const groups = props.groupMessages;
+  const groups = props.groupMessages;
 
-    function isInDM(accId) {
-      for (const acc of props.directMessages) {
-        if (acc.id === accId) {
-          return true;
-        }
+  function isInDM(accId) {
+    for (const acc of props.directMessages) {
+      if (acc.id === accId) {
+        return true;
       }
-      return false;
     }
+    return false;
+  }
 
-    let markup = groups.map((group) => {
-      const ts = group.topic_set.map((topic) =>
-      <div class="sidebar-unit">
-        <NavLink to={`/groups/${group.id}/${topic.id}`} activeClassName="sidebar-unit--selected">
-          <span class="sidebar-unit__symb"><TopicSymb /></span>
-          <span class="sidebar-unit__text">{topic.title}</span>
-        </NavLink>
+  let markup = groups.map((group) => {
+    const ts = group.topic_set.map((topic) =>
+    <div class="sidebar-unit">
+      <NavLink to={`/groups/${group.id}/${topic.id}`} activeClassName="sidebar-unit--selected">
+        <span class="sidebar-unit__symb"><TopicSymb /></span>
+        <span class="sidebar-unit__text">{topic.title}</span>
+      </NavLink>
+    </div>
+    );
+    const ms = group.membership_set.map(member =>
+      <div>
+        <SidebarMember
+        acc={member.account}
+        membStatus={member.status}
+        online={props.isOnline.has(member.account.id)}
+        inDM={isInDM(member.account.id)}
+        clientWs={props.clientWs}
+        setNotification={props.setNotification}
+        user={props.user}
+        />
       </div>
-      );
-      const ms = group.membership_set.map(member =>
-        <div>
-          <SidebarMember
-          acc={member.account}
-          membStatus={member.status}
-          online={props.isOnline.has(member.account.id)}
-          inDM={isInDM(member.account.id)}
-          clientWs={props.clientWs}
-          setNotification={props.setNotification}
-          user={props.user}
-          />
-        </div>
-      );
-      return (
-        <React.Fragment>
-          <SidebarItem id={group.name} name={group.name} callBack={null} lvl={2}>
-
-            <SidebarItem id={`${group.name}-topics`} name={'Topics'} callBack={null} lvl={3}>
-              {ts}
-            </SidebarItem>
-
-            <SidebarItem id={`${group.name}-members`} name={'Members'} callBack={null} lvl={3}>
-              {ms}
-            </SidebarItem>
-
-          </SidebarItem>
-        </React.Fragment>
-      );
-    });
-
+    );
     return (
+      <React.Fragment>
+        <SidebarItem
+        id={group.name}
+        name={group.name} 
+        lvl={2}
+        content={
+          <React.Fragment>
+            <SidebarItem id={`${group.name}-topics`} name={'Topics'} lvl={3} content={ts} />
+            <SidebarItem id={`${group.name}-members`} name={'Members'} lvl={3} content={ms} />
+          </React.Fragment>
+        }
+        />
+      </React.Fragment>
+    );
+  });
+
+  return (
+    <SidebarItem
+    id={'groups'}
+    name={'Groups'}
+    lvl={1}
+    extra={null}
+    content={
       <div class="sidebar__contacts">
         {markup}
       </div>
-    );
+    }/>
+  );
 }
 
 
