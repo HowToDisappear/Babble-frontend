@@ -2,27 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 
 
 function ModalFindUser(props) {
-  // Array: directMessages
-  // Callback: setShowModal (inp: 'FindUser' or 'User' or null)
+  // Callback: setShowModal (inp: string)
   // Callback: setContact (inp: Account obj)
   // DOMRect: btnRect
   const [inpId, setInpId] = useState(null);
   const [err, setErr] = useState(null);
   const MODAL_HEIGHT = 187;
 
-  let top = Math.min(props.btnRect.bottom, window.innerHeight - MODAL_HEIGHT);
-  let left = props.btnRect.right;
+  let top = Math.min(props.btnRect.top, window.innerHeight - MODAL_HEIGHT - 12);
+  let left = props.btnRect.right + 8;
 
-  function findAccount(inputId, accounts) {
+  function findAccount(inputId) {
     let id = parseInt(atob(inputId));
     if (id) {
-      for (const acc of accounts) {
-        if (id === acc.id) {
-          props.setContact(acc);
-          props.setShowModal('redirect');
-          return null;
-        }
-      }
       fetch(`http://127.0.0.1:8000/api/accounts/contacts/${id}`)
       .then((resp) => {
         if (!resp.ok) {
@@ -32,7 +24,7 @@ function ModalFindUser(props) {
       })
       .then((json) => {
         props.setContact(json);
-        props.setShowModal('User');
+        props.setShowModal('FindUserNext');
       })
       .catch((err) => {
         setErr('Could not find matching account');
@@ -43,7 +35,16 @@ function ModalFindUser(props) {
   }
 
   return (
-    <div class="modal-new-dm-wrapper">
+    <div
+    class="modal-new-dm-wrapper"
+    onClick={(evt) => {
+      if (!evt.target.closest('.modal-new-dm')) {
+          props.setShowModal(null);
+          evt.preventDefault();
+          evt.stopPropagation();
+        }
+      }}
+    >
       <div class="modal-new-dm"
       style={{
         top: `${top}px`,
@@ -81,8 +82,7 @@ function ModalFindUser(props) {
         disabled={inpId ? false : true}
         class="modal-new-dm__btn-find"
         onClick={() => {
-          console.log('clicked');
-          findAccount(inpId, props.directMessages);
+          findAccount(inpId);
         }}
         >Find</button>
 

@@ -1,6 +1,6 @@
 import { findAllByTestId } from '@testing-library/dom';
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, Redirect } from "react-router-dom";
 
 import Contact from '../Contact.js';
 import MsgInput from './MsgInput.js';
@@ -15,9 +15,9 @@ function ContentGM(props) {
     const txtAr = useRef(null);
     const bottom = useRef(null);
 
-    useEffect(() => {
-      bottom.current.focus();
-    });
+    // useEffect(() => {
+    //   bottom.current.focus();
+    // });
 
     console.log('starting -------->');
     let [topicTitle, chat, members] = (() => {
@@ -35,7 +35,11 @@ function ContentGM(props) {
           }
         }
       }
+      return [null, null, null];
     })();
+    if (!(topicTitle && chat && members)) {
+      return <Redirect to="/" />;
+    }
 
     for (let msg of chat) {
       msg.timestamp = new Date(msg.timestamp);

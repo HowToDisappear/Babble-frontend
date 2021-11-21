@@ -13,10 +13,10 @@ function ModalUser(props) {
 
   const acc = props.contact;
   const [msgInp, setMsgInp] = useState('');
-  const MODAL_HEIGHT = 300;
+  const MODAL_HEIGHT = 348;
 
-  let top = Math.min(props.rect.bottom, window.innerHeight - MODAL_HEIGHT);
-  let left = props.rect.right;
+  let top = Math.min(props.rect.top, window.innerHeight - MODAL_HEIGHT);
+  let left = props.rect.right + 4;
 
   async function msgSubmit() {
     if (!props.inDM) {
@@ -82,7 +82,16 @@ function ModalUser(props) {
   );
 
   return (
-    <div class="modal-contact-wrapper">
+    <div
+    class="modal-contact-wrapper"
+    onClick={(evt) => {
+      if (!evt.target.closest('.modal-contact')) {
+        props.setShowModal(null);
+        evt.preventDefault();
+        evt.stopPropagation();
+      }
+    }}
+    >
       <div class="modal-contact"
       style={{
         top: `${top}px`,
@@ -92,7 +101,6 @@ function ModalUser(props) {
         <div class="modal-contact__header">
           <div class="modal-contact__header__title"></div>
           <div class="modal-contact__header__close" onClick={(evt) => {
-            console.log('**** clicked close modal ****');
             props.setShowModal(null);
             evt.preventDefault();
             evt.stopPropagation();
@@ -114,6 +122,7 @@ function ModalUser(props) {
 
         <div class="modal-contact__username">{acc.username}</div>
         <div class="modal-contact__id">{`id: ${btoa(acc.id)}`}</div>
+        <div class="modal-contact__about">{acc.about}</div>
         <div
         class={`modal-contact__input ${props.userId === acc.id ? "display-none" : ""}`}
         >
@@ -124,7 +133,7 @@ function ModalUser(props) {
           value={msgInp}
           ></input>
           <span
-          class="modal-contact__input__btn"
+          class={`modal-contact__input__btn${msgInp ? " pointer" : ""}`}
           onClick={(evt) => {
             if (msgInp) {
               msgSubmit();

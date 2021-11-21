@@ -3,9 +3,10 @@ import { UserContext } from '../../../App.js';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import Profile from './Profile.js';
+import Account from './Account.js';
 
 
-function ContentSettings() {
+function ContentSettings(props) {
   const { user, setUser } = useContext(UserContext);
   let match = useRouteMatch();
 
@@ -16,9 +17,7 @@ function ContentSettings() {
           <Profile />
         </Route>
         <Route path={`${match.path}/account`}>
-          <div>
-            <h2>Account</h2>
-          </div>
+          <Account setNotification={props.setNotification} user={user} />
         </Route>
         <Route path={`${match.path}/preferences`}>
           <div>

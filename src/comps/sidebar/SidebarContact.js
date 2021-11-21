@@ -1,13 +1,38 @@
 import Cookies from 'js-cookie';
 import React, { useState, useEffect, useRef } from 'react';
 import { Route, Redirect } from "react-router-dom";
+import ModalConfirmation from '../modals/ModalConfirmation';
 
 
 function SidebarContact(props) {
     // Account obj: acc
     // Boolean: online
     // Number: unread
-    const [deleteConf, setDeleteConf] = useState(null);
+    const [showModal, setShowModal] = useState(null);
+
+    function deleteChat() {
+      let url = 'http://' + window.location.host + `/api/accounts/contacts/${props.acc.id}`;
+      let headers = new Headers();
+      headers.append('X-CSRFToken', Cookies.get('csrftoken'));
+      
+      fetch(url, {
+          method: 'delete',
+          headers: headers,
+          credentials: 'include',
+      })
+      .then((resp) => {
+        if (resp.ok) {
+          props.clientWs.current.send(JSON.stringify({
+            'type': 'update',
+            'structure': 'dm',
+            'id': props.acc.id
+          }));
+        } else {
+          throw new Error(`HTTP error status: ${resp.status}`);
+        }
+      })
+      .catch((err) => console.log(err));
+    }
 
     return (
       <div class="sidebar__contact">
@@ -25,14 +50,23 @@ function SidebarContact(props) {
         </div>
 
         <div class="sidebar__item-extra-cross" onClick={(evt) => {
-            setDeleteConf(true);
+            setShowModal(true);
             evt.preventDefault();
             evt.stopPropagation();
         }}>
             <CrossSymb />
         </div>
 
-        {deleteConf ? <ModalDeleteMessages contact={props.acc} setDeleteConf={setDeleteConf} setNotification={props.setNotification} clientWs={props.clientWs} /> : null}
+        {showModal
+        ? <ModalConfirmation
+        text={"Delete messages with"}
+        name={props.acc.username}
+        btn={"Delete"}
+        notification={"Messages deleted"}
+        setShowModal={setShowModal}
+        callback={deleteChat}
+        />
+        : null}
       </div>
     );
 }
@@ -46,86 +80,6 @@ function CrossSymb() {
         </svg>
     </React.Fragment>
   );
-}
-
-
-function ModalDeleteMessages(props) {
-    // Account obj: contact
-    let top = window.innerHeight/2 - 180/2;
-    let left = window.innerWidth/2 - 232/2;
-
-    function deleteChat() {
-      let url = 'http://' + window.location.host + `/api/accounts/contacts/${props.contact.id}`;
-      let headers = new Headers();
-      headers.append('X-CSRFToken', Cookies.get('csrftoken'));
-      
-      fetch(url, {
-          method: 'delete',
-          headers: headers,
-          credentials: 'include',
-      })
-      .then((resp) => {
-        if (resp.ok) {
-          props.clientWs.current.send(JSON.stringify({
-            'type': 'update',
-            'structure': 'dm',
-            'id': props.contact.id
-          }));
-        } else {
-          throw new Error(`HTTP error status: ${resp.status}`);
-        }
-      })
-      .catch((err) => console.log(err));
-    }
-
-    return (
-        <div
-        class="modal-delete-sidebar-msg-wrapper"
-        onClick={(evt) => {
-            if (!evt.target.closest('.modal-delete-sidebar-msg')) {
-                props.setDeleteConf(null);
-                evt.preventDefault();
-                evt.stopPropagation();
-            }
-        }}>
-
-            <div
-            class="modal-delete-sidebar-msg"
-            style={{
-                top: `${top}px`,
-                left: `${left}px`,
-              }}>
-                <div class="modal-delete-sidebar-msg__title">
-                    Delete all messages with <span>{props.contact.username}</span>?
-                </div>
-
-                <button
-                class="modal-delete-sidebar-msg__btn-delete"
-                onClick={(evt) => {
-                  deleteChat();
-                  props.setDeleteConf(null);
-                  props.setNotification({
-                    'text': `Messages with ${props.contact.username} deleted`,
-                    'color': '#333738',
-                    'time': 4000
-                  });
-                  // props.setDeleteConf('redirect');
-                  evt.preventDefault();
-                  evt.stopPropagation();
-                }}
-                >Delete</button>
-
-                <button
-                class="modal-delete-sidebar-msg__btn-cancel"
-                onClick={(evt) => {
-                  props.setDeleteConf(null);
-                  evt.preventDefault();
-                  evt.stopPropagation();
-                }}>Cancel</button>
-            </div>
-            
-        </div>
-    );
 }
 
 

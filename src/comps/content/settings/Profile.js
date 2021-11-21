@@ -8,7 +8,7 @@ import Avatar from './Avatar.js';
 function Profile() {
   const { user, setUser } = useContext(UserContext);
   const [name, setName] = useState(user.username);
-  const [email, setEmail] = useState(user.user.username);
+  const [about, setAbout] = useState(user.about);
   const [isSending, setIsSending] = useState(false);
   const fileInp = useRef(null);
   const [userFile, setUserFile] = useState(null);
@@ -19,8 +19,8 @@ function Profile() {
     headers.append('X-CSRFToken', Cookies.get('csrftoken'));
 
     let profileForm = new FormData();
-    profileForm.set('email', email);
     profileForm.set('username', name);
+    profileForm.set('about', about);
     
     setIsSending(true);
     let resp = await fetch(url, {
@@ -102,6 +102,7 @@ function Profile() {
                         class="profile-input"
                         name="username"
                         type="text"
+                        maxLength="30"
                         value={name}
                         onChange={(evt) => setName(evt.target.value)}
                         />
@@ -109,13 +110,14 @@ function Profile() {
                 </li>
                 <li>
                     <div class="profile-inp-wrapper">
-                        <label class="profile-label" for="email">Email</label>
+                        <label class="profile-label" for="about">About</label>
                         <input
                         class="profile-input"
-                        name="email"
-                        type="email"
-                        value={email}
-                        onChange={(evt) => setEmail(evt.target.value)}
+                        name="about"
+                        type="text"
+                        maxLength="150"
+                        value={about}
+                        onChange={(evt) => setAbout(evt.target.value)}
                         />
                     </div>
                 </li>

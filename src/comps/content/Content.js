@@ -38,7 +38,9 @@ function Content(props) {
           </Route>
 
           <Route path="/settings">
-            <ContentSettings />
+            <ContentSettings
+            setNotification={props.setNotification}
+            />
           </Route>
 
           <Route path="/contacts">

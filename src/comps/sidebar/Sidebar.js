@@ -23,6 +23,16 @@ function Sidebar(props) {
 
           <SidebarSettings />
 
+          <SidebarGroups
+          groupMessages={props.groupMessages}
+          directMessages={props.directMessages}
+          clientWs={props.clientWs}
+          isOnline={props.isOnline}
+          setNotification={props.setNotification}
+          user={props.user}
+          setUpdGM={props.setUpdGM}
+          />
+        
           <SidebarMessages
           directMessages={props.directMessages}
           clientWs={props.clientWs}
@@ -31,15 +41,6 @@ function Sidebar(props) {
           setNotification={props.setNotification}
           />
 
-          <SidebarGroups
-          groupMessages={props.groupMessages}
-          directMessages={props.directMessages}
-          clientWs={props.clientWs}
-          isOnline={props.isOnline}
-          setNotification={props.setNotification}
-          user={props.user}
-          />
-        
         </div>
       </div>
       <SidebarUserInfo user={props.user} />

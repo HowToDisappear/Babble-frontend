@@ -139,7 +139,7 @@ function ContentDM(props) {
               <span class={`chat__date__date${newBar ? ' chat__date__date--orange' : ''}`}>{dateBar}</span>
             </div>
           </div>
-          <div class="chat__msg-container">
+          <div class="chat__msg">
             <div class="chat__msg__pic-wrapper">
               <div class={`chat__msg__pic${newSender ? "" : " display-none"}`}>
                 {msg.sender === user.id
@@ -147,7 +147,8 @@ function ContentDM(props) {
                 : contactAvatar}
               </div>
             </div>
-            <div key={msg.id.toString()} class={`chat__msg ${(msg.sender == contId) ? 'chat__msg--side1' : 'chat__msg--side2'}`}>
+            <div class="chat__msg__user">{msg.sender === user.id ? user.username : cont.username}</div>
+            <div key={msg.id.toString()} class={`chat__msg__text ${(msg.sender == contId) ? 'chat__msg--side1' : 'chat__msg--side2'}`}>
               {msg.text}
             </div>
           </div>

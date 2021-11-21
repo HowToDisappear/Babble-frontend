@@ -22,7 +22,7 @@ function SidebarMember(props) {
           inDM={props.inDM}
           setShowModal={setShowModal}
           setNotification={props.setNotification}
-          user={props.user}
+          userId={props.user.id}
           rect={membRect} />;
           break;
         case 'KickUser':

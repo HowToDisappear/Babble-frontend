@@ -47,16 +47,24 @@ function SidebarMessagesExtra(props) {
     const [showModal, setShowModal] = useState(null);
     const [contact, setContact] = useState(null);
   
+    function checkInDM() {
+      for (const acc of props.directMessages) {
+        if (contact.id === acc.id) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     let modal;
     switch (showModal) {
         case 'FindUser':
           modal = <ModalFindUser
-          directMessages={props.directMessages}
           setShowModal={setShowModal}
           setContact={setContact}
           btnRect={btnRect} />;
           break;
-        case 'User':
+        case 'FindUserNext':
           modal = <ModalUser
           clientWs={props.clientWs}
           contact={contact}
@@ -65,10 +73,10 @@ function SidebarMessagesExtra(props) {
           setNotification={props.setNotification}
           rect={btnRect}
           userId={null}
-          inDM={false} />;
+          inDM={checkInDM()} />;
           break;
         case 'redirect':
-          modal = <Redirect to={`/chats/${contact.id}`} />;
+          // modal = <Redirect to={`/chats/${contact.id}`} />;
           break;
         default:
           modal = null;
@@ -84,7 +92,7 @@ function SidebarMessagesExtra(props) {
             }}>
                 <PlusSymb />
             </div>
-            {showModal ? <div>{modal}</div> : null}
+            {showModal ? <div class="modal">{modal}</div> : null}
         </React.Fragment>
     );
 }

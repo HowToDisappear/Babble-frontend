@@ -315,6 +315,7 @@ function Container(props) {
   const clientWs = useRef(null);
   const { user, setUser } = useContext(UserContext);
   const [updDM, setUpdDM] = useState(1);
+  const [updGM, setUpdGM] = useState(1);
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
@@ -349,7 +350,7 @@ function Container(props) {
       console.log('setting group chats');
       setGroupMessages(json);
     });
-  }, []);
+  }, [updGM]);
 
   useEffect(() => {
     // creating websocket and defining handlers for messages
@@ -446,6 +447,8 @@ function Container(props) {
         });
       } else if (data.type === 'update.dm') {
         setUpdDM(prevState => prevState * -1);
+      } else if (data.type === 'update.gm') {
+        setUpdGM(prevState => prevState * -1);
       }
     };
   }, []);
@@ -465,8 +468,10 @@ function Container(props) {
       directMessages={directMessages}
       groupMessages={groupMessages}
       isOnline={isOnline}
+      setUpdGM={setUpdGM}
       />
       <Content
+      setNotification={setNotification}
       clientWs={clientWs}
       isOnline={isOnline}
       directMessages={directMessages}
@@ -482,7 +487,7 @@ function Container(props) {
 
 function Notification(props) {
   const box = useRef(null);
-  const top = window.innerHeight - 70;
+  const top = window.innerHeight - 200;
   const left = window.innerWidth/2 - 110;
   setTimeout(() => props.setNotification(null), props.obj.time);
   setTimeout(() => box.current.style = (
