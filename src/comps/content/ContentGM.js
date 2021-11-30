@@ -2,7 +2,6 @@ import { findAllByTestId } from '@testing-library/dom';
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, Redirect } from "react-router-dom";
 
-import Contact from '../Contact.js';
 import MsgInput from './MsgInput.js';
 import { UserContext } from '../../App.js';
 
@@ -15,12 +14,8 @@ function ContentGM(props) {
     const txtAr = useRef(null);
     const bottom = useRef(null);
 
-    // useEffect(() => {
-    //   bottom.current.focus();
-    // });
-
     console.log('starting -------->');
-    let [topicTitle, chat, members] = (() => {
+    let [topicTitle, chat, members, groupName] = (() => {
       for (const group of props.groupMessages) {
         console.log(group);
         if (group.id === groupId) {
@@ -30,14 +25,21 @@ function ContentGM(props) {
               console.log(topic.title);
               console.log(topic.groupmessage_set);
               console.log(group.membership_set);              
-              return [topic.title, topic.groupmessage_set, group.membership_set];
+              return [topic.title, topic.groupmessage_set, group.membership_set, group.name];
             }
           }
         }
       }
       return [null, null, null];
     })();
-    if (!(topicTitle && chat && members)) {
+
+    useEffect(() => {
+      if ((topicTitle && chat && members && groupName)) {
+        bottom.current.focus();
+      }
+    }, [chat]);
+
+    if (!(topicTitle && chat && members && groupName)) {
       return <Redirect to="/" />;
     }
 
@@ -64,6 +66,7 @@ function ContentGM(props) {
       const todayBar = ( msgDate.getTime() === today.getTime() && showTime.getTime() !== msgTime.getTime() );
       if (otherDayBar) {
         showDate = msgDate;
+        showTime = msgTime;
         dateBar = (() => {
           let arr = showDate.toDateString().split(' ').slice(1,);
           return [arr[1], arr[0], arr[2]].join(' ');
@@ -93,16 +96,19 @@ function ContentGM(props) {
               <span class={`chat__date__date${newBar ? ' chat__date__date--orange' : ''}`}>{dateBar}</span>
             </div>
           </div>
-          <div class="chat__msg-container">
-            <div class="chat__msg__pic-wrapper">
+          <div class="chat__msg">
+            <div class="chat__msg__pic-wrapper chat__msg__pic-wrapper--gm">
               <div class={`chat__msg__pic${isNewSender ? "" : " display-none"}`}>
                 {sender.image
                 ? <img class="chat__msg__pic" src={sender.image} />
                 : <div>{sender.username[0]}</div>}
               </div>
             </div>
-            <div key={msg.id.toString()} class="chat__msg chat__msg--side1">
-              {msg.text}
+            <div>
+              <div class={`chat__msg__name${isNewSender ? "" : " display-none"}`}>{sender.username}</div>
+              <div key={msg.id.toString()} class="chat__msg__text chat__msg--side1">
+                {msg.text}
+              </div>
             </div>
           </div>
         </React.Fragment>
@@ -112,15 +118,19 @@ function ContentGM(props) {
     return (
       <React.Fragment>
         {console.log('rendering ContentChat')}
-        <header class="content__header"></header>
+        <header class="content__header">
+          <div class="content__header-title">{`${groupName}: ${topicTitle}`}</div>
+        </header>
         <main class="chat">
           <div class="chat-upper-wrap">
-            <div class="chat__contact-wrapper">
-              {topicTitle}
+            <div class="chat__topic-title-wrapper">
+              <div class="chat__topic-title">
+                {topicTitle}
+              </div>
             </div>
             <div class="chat__messages">
               {chat}
-            <input id="chat-bottom" ref={bottom} autoFocus onFocus={() => txtAr.current.focus()} />
+              <input id="chat-bottom" ref={bottom} onFocus={() => txtAr.current.focus()} />
             </div>
           </div>
           <div class="chat-lower-wrap">

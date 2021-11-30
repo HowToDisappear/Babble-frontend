@@ -25,246 +25,6 @@ const UserContext = React.createContext({
 export {UserContext};
 
 
-const GROUP = [
-  {
-      "id": 1,
-      "name": "mygroup",
-      "topic_set": [
-          {
-              "title": "General",
-              "groupmessage_set": []
-          },
-          {
-              "title": "hello world",
-              "groupmessage_set": []
-          },
-          {
-              "title": "random talks",
-              "groupmessage_set": []
-          }
-      ],
-      "membership_set": [
-          {
-              "account": {
-                  "id": 1,
-                  "user": {
-                      "id": 2,
-                      "username": "john@mail.com",
-                      "email": "john@mail.com",
-                      "first_name": "",
-                      "last_name": ""
-                  },
-                  "username": "john",
-                  "image": null
-              },
-              "status": 2
-          }
-      ]
-  },
-  {
-      "id": 2,
-      "name": "othergroup",
-      "topic_set": [
-          {
-              "title": "green",
-              "groupmessage_set": [
-                  {
-                      "id": 1,
-                      "sender": 2,
-                      "topic": 4,
-                      "timestamp": "2021-10-03T08:15:04.895903Z",
-                      "text": "hello everyone!",
-                      "read_status": []
-                  },
-                  {
-                      "id": 2,
-                      "sender": 4,
-                      "topic": 4,
-                      "timestamp": "2021-10-03T08:16:08.059080Z",
-                      "text": "hi dawg how are you?",
-                      "read_status": []
-                  },
-                  {
-                      "id": 3,
-                      "sender": 1,
-                      "topic": 4,
-                      "timestamp": "2021-10-03T08:16:31.034244Z",
-                      "text": "how are you guys?",
-                      "read_status": []
-                  }
-              ]
-          },
-          {
-              "title": "red",
-              "groupmessage_set": [
-                  {
-                      "id": 4,
-                      "sender": 2,
-                      "topic": 5,
-                      "timestamp": "2021-10-03T08:16:58.066105Z",
-                      "text": "what a lovely day",
-                      "read_status": []
-                  },
-                  {
-                      "id": 5,
-                      "sender": 1,
-                      "topic": 5,
-                      "timestamp": "2021-10-03T08:17:15.966892Z",
-                      "text": "yeah sure",
-                      "read_status": []
-                  },
-                  {
-                      "id": 6,
-                      "sender": 4,
-                      "topic": 5,
-                      "timestamp": "2021-10-03T08:17:31.587814Z",
-                      "text": "sun is shining!",
-                      "read_status": []
-                  }
-              ]
-          },
-          {
-              "title": "blue",
-              "groupmessage_set": []
-          }
-      ],
-      "membership_set": [
-          {
-              "account": {
-                  "id": 1,
-                  "user": {
-                      "id": 2,
-                      "username": "john@mail.com",
-                      "email": "john@mail.com",
-                      "first_name": "",
-                      "last_name": ""
-                  },
-                  "username": "john",
-                  "image": null
-              },
-              "status": 2
-          },
-          {
-              "account": {
-                  "id": 2,
-                  "user": {
-                      "id": 3,
-                      "username": "gill@mail.com",
-                      "email": "gill@mail.com",
-                      "first_name": "",
-                      "last_name": ""
-                  },
-                  "username": "gill",
-                  "image": null
-              },
-              "status": 1
-          },
-          {
-              "account": {
-                  "id": 4,
-                  "user": {
-                      "id": 5,
-                      "username": "mike@mail.com",
-                      "email": "mike@mail.com",
-                      "first_name": "",
-                      "last_name": ""
-                  },
-                  "username": "mike",
-                  "image": null
-              },
-              "status": 1
-          }
-      ]
-  },
-  {
-      "id": 3,
-      "name": "anothergroup",
-      "topic_set": [
-          {
-              "title": "Velvet Underground",
-              "groupmessage_set": [
-                  {
-                      "id": 7,
-                      "sender": 4,
-                      "topic": 7,
-                      "timestamp": "2021-10-03T08:19:43.013190Z",
-                      "text": "hey guys whats you favourite track?",
-                      "read_status": []
-                  },
-                  {
-                      "id": 8,
-                      "sender": 2,
-                      "topic": 7,
-                      "timestamp": "2021-10-03T08:20:08.440525Z",
-                      "text": "I think Heroine is the best!",
-                      "read_status": []
-                  }
-              ]
-          }
-      ],
-      "membership_set": [
-          {
-              "account": {
-                  "id": 1,
-                  "user": {
-                      "id": 2,
-                      "username": "john@mail.com",
-                      "email": "john@mail.com",
-                      "first_name": "",
-                      "last_name": ""
-                  },
-                  "username": "john",
-                  "image": null
-              },
-              "status": 1
-          },
-          {
-              "account": {
-                  "id": 2,
-                  "user": {
-                      "id": 3,
-                      "username": "gill@mail.com",
-                      "email": "gill@mail.com",
-                      "first_name": "",
-                      "last_name": ""
-                  },
-                  "username": "gill",
-                  "image": null
-              },
-              "status": 1
-          },
-          {
-              "account": {
-                  "id": 4,
-                  "user": {
-                      "id": 5,
-                      "username": "mike@mail.com",
-                      "email": "mike@mail.com",
-                      "first_name": "",
-                      "last_name": ""
-                  },
-                  "username": "mike",
-                  "image": null
-              },
-              "status": 2
-          }
-      ]
-  }
-]
-
-
-// function App() {
-//   return (
-//     <div class="container">
-//     <Sidebar />
-//     <Content />
-//   </div>
-//   );
-// }
-
-
-
-
 function App() {
   const [user, setUser] = useState(null);
   // user is one of: null (in process), User (logged in), false (not logged in)
@@ -286,8 +46,7 @@ function App() {
   }, []);
 
   if (user === null) {
-    console.log('loading..');
-    return 'Loading...';
+    return '';
   }
   
   return (
@@ -298,7 +57,7 @@ function App() {
         </Route>
         <Route path="/" render={() => {
           return (user
-            ? <Container />
+            ? <Container setUser={setUser}/>
             : <Signin />)
         }} />
       </Switch>
@@ -462,6 +221,7 @@ function Container(props) {
       {console.log("rendering in container")}
       {notification ? <Notification obj={notification} setNotification={setNotification} /> : null}
       <Sidebar
+      setUser={props.setUser}
       setNotification={setNotification}
       clientWs={clientWs}
       user={user}
@@ -487,8 +247,8 @@ function Container(props) {
 
 function Notification(props) {
   const box = useRef(null);
-  const top = window.innerHeight - 200;
-  const left = window.innerWidth/2 - 110;
+  const top = window.innerHeight - 300;
+  const left = 220 + (window.innerWidth - 220)/2 - 110;
   setTimeout(() => props.setNotification(null), props.obj.time);
   setTimeout(() => box.current.style = (
     "transform: scale(1);"

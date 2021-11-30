@@ -60,24 +60,24 @@ function ModalChangePassword(props) {
 
     return (
         <div
-        class="modal-change-pass-wrapper"
+        class="modal-account-wrapper"
         onClick={(evt) => {
-            if (!evt.target.closest('.modal-change-pass')) {
+            if (!evt.target.closest('.modal-account')) {
                 props.setShowModal(null);
             }
         }}>
 
             <div
-            class="modal-change-pass"
+            class="modal-account"
             style={{
                 top: `${top}px`,
                 left: `${left}px`,
                 }}>
 
-                <div class="modal-change-pass__header">
-                    <div class="modal-change-pass__header__title">Change password</div>
+                <div class="modal-account__header">
+                    <div class="modal-account__header__title">Change password</div>
                     <div
-                    class="modal-change-pass__header__close"
+                    class="modal-account__header__close"
                     onClick={() => props.setShowModal(null)}
                     >
                         <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -88,7 +88,7 @@ function ModalChangePassword(props) {
                 <form>
                     <ul>
                         <li>
-                            <div class="modal-change-pass-inp">
+                            <div class="modal-account-inp">
                                 <span>
                                     <svg width="10" height="13" viewBox="0 0 10 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M4.83562 0.00531769L5 0C6.32548 0 7.41004 1.03154 7.49468 2.33562L7.5 2.5V3.5H8.5C9.32843 3.5 10 4.17157 10 5V11C10 11.8284 9.32843 12.5 8.5 12.5H1.5C0.671573 12.5 0 11.8284 0 11V5C0 4.17157 0.671573 3.5 1.5 3.5H2.5V2.5C2.5 1.17452 3.53154 0.0899613 4.83562 0.00531769ZM8.5 4.5H1.5C1.22386 4.5 1 4.72386 1 5V11C1 11.2761 1.22386 11.5 1.5 11.5H8.5C8.77614 11.5 9 11.2761 9 11V5C9 4.72386 8.77614 4.5 8.5 4.5ZM5 7C5.55228 7 6 7.44772 6 8C6 8.55228 5.55228 9 5 9C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7ZM5.14446 1.00687L5 1C4.2203 1 3.57955 1.59489 3.50687 2.35554L3.5 2.5V3.5H6.5V2.5C6.5 1.7203 5.90511 1.07955 5.14446 1.00687Z" fill="#828A8E"/>
@@ -101,7 +101,7 @@ function ModalChangePassword(props) {
                             </div>
                         </li>
                         <li>
-                            <div class="modal-change-pass-inp">
+                            <div class="modal-account-inp">
                                 <span>
                                     <svg width="10" height="13" viewBox="0 0 10 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M4.83562 0.00531769L5 0C6.32548 0 7.41004 1.03154 7.49468 2.33562L7.5 2.5V3.5H8.5C9.32843 3.5 10 4.17157 10 5V11C10 11.8284 9.32843 12.5 8.5 12.5H1.5C0.671573 12.5 0 11.8284 0 11V5C0 4.17157 0.671573 3.5 1.5 3.5H2.5V2.5C2.5 1.17452 3.53154 0.0899613 4.83562 0.00531769ZM8.5 4.5H1.5C1.22386 4.5 1 4.72386 1 5V11C1 11.2761 1.22386 11.5 1.5 11.5H8.5C8.77614 11.5 9 11.2761 9 11V5C9 4.72386 8.77614 4.5 8.5 4.5ZM5 7C5.55228 7 6 7.44772 6 8C6 8.55228 5.55228 9 5 9C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7ZM5.14446 1.00687L5 1C4.2203 1 3.57955 1.59489 3.50687 2.35554L3.5 2.5V3.5H6.5V2.5C6.5 1.7203 5.90511 1.07955 5.14446 1.00687Z" fill="#828A8E"/>
@@ -114,7 +114,7 @@ function ModalChangePassword(props) {
                             </div>
                         </li>
                         <li>
-                            <div class="modal-change-pass-inp">
+                            <div class="modal-account-inp">
                                 <span>
                                     <svg width="10" height="13" viewBox="0 0 10 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M4.83562 0.00531769L5 0C6.32548 0 7.41004 1.03154 7.49468 2.33562L7.5 2.5V3.5H8.5C9.32843 3.5 10 4.17157 10 5V11C10 11.8284 9.32843 12.5 8.5 12.5H1.5C0.671573 12.5 0 11.8284 0 11V5C0 4.17157 0.671573 3.5 1.5 3.5H2.5V2.5C2.5 1.17452 3.53154 0.0899613 4.83562 0.00531769ZM8.5 4.5H1.5C1.22386 4.5 1 4.72386 1 5V11C1 11.2761 1.22386 11.5 1.5 11.5H8.5C8.77614 11.5 9 11.2761 9 11V5C9 4.72386 8.77614 4.5 8.5 4.5ZM5 7C5.55228 7 6 7.44772 6 8C6 8.55228 5.55228 9 5 9C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7ZM5.14446 1.00687L5 1C4.2203 1 3.57955 1.59489 3.50687 2.35554L3.5 2.5V3.5H6.5V2.5C6.5 1.7203 5.90511 1.07955 5.14446 1.00687Z" fill="#828A8E"/>
@@ -127,11 +127,11 @@ function ModalChangePassword(props) {
                             </div>
                         </li>
                         <li>
-                            <div class="modal-change-pass__error">{errorMsg}</div>
+                            <div class="modal-account__error">{errorMsg}</div>
                         </li>
                         <li>
                             <button
-                            class="modal-change-pass__btn"
+                            class="modal-account__btn"
                             type="button"
                             disabled={![oldPassw, newPassw, newPasswRep].every(el => el)}
                             onClick={() => {

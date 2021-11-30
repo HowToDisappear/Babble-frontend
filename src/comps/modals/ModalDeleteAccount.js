@@ -1,20 +1,20 @@
 import Cookies from 'js-cookie';
 import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 
 import PasswSymb from '../auth/PasswSymb.js';
 
 
-function ModalChangeEmail(props) {
+function ModalDeleteAccount(props) {
     // callback func: setShowModal
     let top = window.innerHeight/2 - 320/2;
     let left = window.innerWidth/2 - 360/2;
     const [currPassw, setCurrPassw] = useState(null);
     const [currPasswShow, setCurrPasswShow] = useState(false);
-    const [newEmail, setNewEmail] = useState(null);
     const [isSending, setIsSending] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
-    async function handleSave() {
+    async function handleDelete() {
         if (isSending) {
             return null;
         }
@@ -24,12 +24,7 @@ function ModalChangeEmail(props) {
             setErrorMsg("Password provided isn't correct");
             setIsSending(false);
         } else {
-            props.setShowModal(null);
-            props.setNotification({
-                'text': 'Verification letter has been sent to the new email address',
-                'color': '#333738',
-                'time': 6000
-            });
+            return (<Redirect to="/" />);
         }
     }
 
@@ -40,10 +35,9 @@ function ModalChangeEmail(props) {
 
         let form = new FormData();
         form.set('current_password', currPassw);
-        form.set('new_email', newEmail);
         
         let resp = await fetch(url, {
-            method: 'put',
+            method: 'delete',
             headers: headers,
             body: form,
             credentials: 'include',
@@ -68,7 +62,7 @@ function ModalChangeEmail(props) {
                 }}>
 
                 <div class="modal-account__header">
-                    <div class="modal-account__header__title">Change email</div>
+                    <div class="modal-account__header__title">Delete account</div>
                     <div
                     class="modal-account__header__close"
                     onClick={() => props.setShowModal(null)}
@@ -79,7 +73,7 @@ function ModalChangeEmail(props) {
                     </div>
                 </div>
                 <div class="modal-account__info">
-                    <span>Verification letter will be sent to the new email address</span>
+                    <span>Once you delete your account you will not be able to restore it</span>
                 </div>
                 <form>
                     <ul>
@@ -97,27 +91,17 @@ function ModalChangeEmail(props) {
                             </div>
                         </li>
                         <li>
-                            <div class="modal-account-inp">
-                                <span>
-                                    <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M0 3.53807V8.5C0 9.60457 0.895431 10.5 2 10.5H10C11.1046 10.5 12 9.60457 12 8.5V2.5C12 1.39543 11.1046 0.5 10 0.5H2C0.895431 0.5 0 1.39543 0 2.5V3.53807C0 3.53804 0 3.53809 0 3.53807ZM2 1.5H10C10.5523 1.5 11 1.94772 11 2.5V3.23987L6.0001 5.93212L1 3.23976V2.5C1 1.94772 1.44772 1.5 2 1.5ZM1 4.37552L5.76305 6.94024C5.91104 7.01992 6.08916 7.01992 6.23715 6.94024L11 4.37562V8.5C11 9.05229 10.5523 9.5 10 9.5H2C1.44772 9.5 1 9.05228 1 8.5V4.37552Z" fill="#828A8E"/>
-                                    </svg>
-                                </span>
-                                <input type="email" value={newEmail} placeholder="New email" onChange={(evt) => setNewEmail(evt.target.value)} />
-                            </div>
-                        </li>
-                        <li>
                             <div class="modal-account__error">{errorMsg}</div>
                         </li>
                         <li>
                             <button
                             class="modal-account__btn"
                             type="button"
-                            disabled={![currPassw, newEmail].every(el => el)}
+                            disabled={currPassw ? false : true}
                             onClick={() => {
-                                handleSave();
+                                handleDelete();
                             }}
-                            >Save</button>
+                            >Delete</button>
                         </li>
                     </ul>
                 </form>
@@ -131,4 +115,4 @@ function ModalChangeEmail(props) {
 
 
 
-export default ModalChangeEmail;
+export default ModalDeleteAccount;

@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from "react-router-dom";
 import { Route, Redirect } from "react-router-dom";
 
-import Contact from '../Contact.js';
+import ContentDMContact from './ContentDMContact.js';
 import MsgInput from './MsgInput.js';
 import { UserContext } from '../../App.js';
 
@@ -15,27 +15,25 @@ function ContentDM(props) {
     const txtAr = useRef(null);
     const bottom = useRef(null);
 
-    // useEffect(() => {
-    //   bottom.current.focus();
-    // });
-
     // select contact
-    const cont = (() => {
+    let [cont, chat] = (() => {
       for (const acc of props.directMessages) {
         if (acc.id == contId) {
-          return acc;
+          return [acc, acc.directmessage_set];
         }
       }
-      return null;
+      return [null, null];
     })();
+
+    useEffect(() => {
+      if (cont) {
+        bottom.current.focus();
+      }
+    }, [chat]);
+
     if (!cont) {
       return <Redirect to="/" />;
     }
-
-    // retrieve direct messages set
-    let chat = cont.hasOwnProperty('directmessage_set')
-    ? cont.directmessage_set
-    : [];
     
     // check for unread messages
     let unread = (() => {
@@ -113,10 +111,13 @@ function ContentDM(props) {
       let newBar = false;
       const msgDate = new Date(msg.timestamp.getFullYear(), msg.timestamp.getMonth(), msg.timestamp.getDate());
       const msgTime = new Date(msg.timestamp.getFullYear(), msg.timestamp.getMonth(), msg.timestamp.getDate(), msg.timestamp.getHours(), msg.timestamp.getMinutes());
+      // if msg date is not today and is not the same as previous msg date -> then show date bar
       const otherDayBar = ( msgDate.getTime() !== today.getTime() && msgDate.getTime() !== showDate.getTime() );
-      const todayBar = ( msgDate.getTime() === today.getTime() && showTime.getTime() !== msgTime.getTime() );
+      // if msg date is today and msg time is not the same as previous msg time -> then show date bar
+      const todayBar = ( msgDate.getTime() === today.getTime() && msgTime.getTime() !== showTime.getTime() );
       if (otherDayBar) {
         showDate = msgDate;
+        showTime = msgTime;
         dateBar = (() => {
           let arr = showDate.toDateString().split(' ').slice(1,);
           return [arr[1], arr[0], arr[2]].join(' ');
@@ -147,7 +148,6 @@ function ContentDM(props) {
                 : contactAvatar}
               </div>
             </div>
-            <div class="chat__msg__user">{msg.sender === user.id ? user.username : cont.username}</div>
             <div key={msg.id.toString()} class={`chat__msg__text ${(msg.sender == contId) ? 'chat__msg--side1' : 'chat__msg--side2'}`}>
               {msg.text}
             </div>
@@ -159,15 +159,17 @@ function ContentDM(props) {
     return (
       <React.Fragment>
         {console.log('rendering ContentDM')}
-        <header class="content__header"></header>
+        <header class="content__header">
+          <div class="content__header-title">{cont.username}</div>
+        </header>
         <main class="chat">
           <div class="chat-upper-wrap">
             <div class="chat__contact-wrapper">
-              <Contact acc={cont} online={props.isOnline.has(cont.id)} type="chat"/>
+              <ContentDMContact acc={cont} online={props.isOnline.has(cont.id)}/>
             </div>
             <div class="chat__messages">
               {chat}
-            <input id="chat-bottom" ref={bottom} autoFocus onFocus={() => txtAr.current.focus()} />
+              <input id="chat-bottom" ref={bottom} onFocus={() => txtAr.current.focus()} />
             </div>
           </div>
           <div class="chat-lower-wrap">

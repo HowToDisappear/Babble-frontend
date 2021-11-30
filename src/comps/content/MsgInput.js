@@ -54,6 +54,7 @@ function MsgInput(props) {
         if (keyStore.has('Enter') && !keyStore.has('Shift')) {
           evt.preventDefault();
           if (props.msgInp.get(msgInpKey)) {
+            setHt(null);
             msgSubmit();
           }
         }
